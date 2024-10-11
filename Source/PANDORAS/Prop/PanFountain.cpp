@@ -4,6 +4,7 @@
 #include "Prop/PanFountain.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PointLightComponent.h"
+#include "GameFramework/RotatingMovementComponent.h"
 
 // Sets default values
 APanFountain::APanFountain()
@@ -38,5 +39,47 @@ APanFountain::APanFountain()
 
 	// 조명
 	Light->SetLightColor(FLinearColor::Blue);
+
+	// 회전
+	RotatingMovement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotateMovement"));
+}
+
+void APanFountain::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// 자동 회전 X
+	RotatingMovement->bAutoActivate = false;
+	// 회전 비활성화
+	RotatingMovement->Deactivate();
+}
+
+void APanFountain::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 타이머 설정
+	GetWorld()->GetTimerManager().SetTimer(ActionTimer, this, &APanFountain::TimerAction, ActionPeriod, true, 0.0f);
+}
+
+/*************************************************************************************************
+ * 타이머 주기마다 호출
+ * 회전과 멈춤 반복
+ *
+ * @author	조현식
+ * @date	2024/10/12
+ **************************************************************************************************/
+void APanFountain::TimerAction()
+{
+	if (!RotatingMovement->IsActive())
+	{
+		// 활성화
+		RotatingMovement->Activate(true);
+	}
+	else
+	{
+		// 비활성화
+		RotatingMovement->Deactivate();
+	}
 }
 

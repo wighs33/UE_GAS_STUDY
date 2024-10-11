@@ -14,7 +14,13 @@ class PANDORAS_API APanFountain : public AActor
 public:	
 	APanFountain();
 
-//외관 컴포넌트
+protected:
+	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
+
+	virtual void TimerAction();
+
+// 외관 컴포넌트
 protected:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
 	TObjectPtr<class UStaticMeshComponent> Body;
@@ -24,5 +30,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
 	TObjectPtr<class UPointLightComponent> Light;
+
+// 회전
+protected:
+	UPROPERTY(VisibleAnywhere, Category = Movement)
+	TObjectPtr<class URotatingMovementComponent> RotatingMovement;
+
+	UPROPERTY(EditAnywhere, Category = Timer)
+	float ActionPeriod = 3.0f;
+
+	FTimerHandle ActionTimer;
 
 };
