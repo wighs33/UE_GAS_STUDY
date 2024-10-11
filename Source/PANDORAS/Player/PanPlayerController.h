@@ -14,4 +14,7 @@ class PANDORAS_API APanPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
+	
 };
