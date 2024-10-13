@@ -78,3 +78,7 @@ Content/StarterContent/*
 Content/ThirdPerson/*
 Content/ArenaBattle/*
 Content/InfinityBladeWarriors/*
+Content/__ExternalActors__/*
+Content/__ExternalObjects__/*
+Content/Characters/*
+Content/LevelPrototyping/*

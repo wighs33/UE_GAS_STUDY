@@ -13,5 +13,15 @@ UCLASS()
 class PANDORAS_API APanCharacterPlayer : public APanCharacterBase
 {
 	GENERATED_BODY()
+
+public:
+	APanCharacterPlayer();
 	
+// 카메라
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USpringArmComponent> CameraBoom;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCameraComponent> FollowCamera;
 };
