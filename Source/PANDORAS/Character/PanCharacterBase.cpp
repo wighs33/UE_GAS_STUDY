@@ -4,6 +4,7 @@
 #include "Character/PanCharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PanCharacterControlData.h"
 
 // Sets default values
 APanCharacterBase::APanCharacterBase()
@@ -53,19 +54,36 @@ APanCharacterBase::APanCharacterBase()
 	{
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
 	}
+
+	// 컨트롤 매니저 그룹에 숄더뷰 컨트롤 데이터 추가
+	static ConstructorHelpers::FObjectFinder<UPanCharacterControlData> ShoulderDataRef(TEXT("/Script/PANDORAS.PanCharacterControlData'/Game/Pandoras/Character/Control/DA_Shoulder.DA_Shoulder'"));
+	if (ShoulderDataRef.Object)
+	{
+		CharacterControlManager.Add(ECharacterControlType::Shoulder, ShoulderDataRef.Object);
+	}
+
+	// 컨트롤 매니저 그룹에 쿼터뷰 컨트롤 데이터 추가
+	static ConstructorHelpers::FObjectFinder<UPanCharacterControlData> QuaterDataRef(TEXT("/Script/PANDORAS.PanCharacterControlData'/Game/Pandoras/Character/Control/DA_Quater.DA_Quater'"));
+	if (QuaterDataRef.Object)
+	{
+		CharacterControlManager.Add(ECharacterControlType::Quater, QuaterDataRef.Object);
+	}
 }
 
-// Called when the game starts or when spawned
-void APanCharacterBase::BeginPlay()
+/*************************************************************************************************
+ * 컨트롤 데이터 세터
+ *
+ * @author	조현식
+ * @date	2024/10/14
+ * @param	
+ * @return	
+ **************************************************************************************************/
+void APanCharacterBase::SetCharacterControlData(const UPanCharacterControlData* CharacterControlData)
 {
-	Super::BeginPlay();
-	
-}
-
-// Called to bind functionality to input
-void APanCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	// 폰과 무브먼트 설정 갱신
+	bUseControllerRotationYaw = CharacterControlData->bUseControllerRotationYaw;
+	GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
+	GetCharacterMovement()->bUseControllerDesiredRotation = CharacterControlData->bUseControllerDesiredRotation;
+	GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
 }
 

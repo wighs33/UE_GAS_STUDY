@@ -6,6 +6,13 @@
 #include "GameFramework/Character.h"
 #include "PanCharacterBase.generated.h"
 
+UENUM()
+enum class ECharacterControlType : uint8
+{
+	Shoulder,
+	Quater
+};
+
 UCLASS()
 class PANDORAS_API APanCharacterBase : public ACharacter
 {
@@ -15,9 +22,10 @@ public:
 	APanCharacterBase();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void SetCharacterControlData(const class UPanCharacterControlData* CharacterControlData);
 
-public:	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//컨트롤 매니저 맵 추가
+	UPROPERTY(EditAnywhere, Category = CharacterControl, Meta = (AllowPrivateAccess = "true"))
+	TMap<ECharacterControlType, class UPanCharacterControlData*> CharacterControlManager;
 
 };
