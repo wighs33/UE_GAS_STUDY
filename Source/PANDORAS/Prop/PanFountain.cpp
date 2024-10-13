@@ -5,6 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/PointLightComponent.h"
 #include "GameFramework/RotatingMovementComponent.h"
+#include "AbilitySystemComponent.h"
+#include "Tag/PanGameplayTag.h"
 
 // Sets default values
 APanFountain::APanFountain()
@@ -13,6 +15,8 @@ APanFountain::APanFountain()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Water = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Water"));
 	Light = CreateDefaultSubobject<UPointLightComponent>(TEXT("Light"));
+	RotatingMovement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotateMovement"));
+	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 
 	// 종속 관계 설정
 	RootComponent = Body;
@@ -39,9 +43,11 @@ APanFountain::APanFountain()
 
 	// 조명
 	Light->SetLightColor(FLinearColor::Blue);
+}
 
-	// 회전
-	RotatingMovement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotateMovement"));
+UAbilitySystemComponent* APanFountain::GetAbilitySystemComponent() const
+{
+	return ASC;
 }
 
 void APanFountain::PostInitializeComponents()
@@ -52,6 +58,18 @@ void APanFountain::PostInitializeComponents()
 	RotatingMovement->bAutoActivate = false;
 	// 회전 비활성화
 	RotatingMovement->Deactivate();
+	// 어빌리티 시스템 컴포넌트 초기화
+	ASC->InitAbilityActorInfo(/*오너액터*/this, /*아바타액터(비주얼만 수행)*/this);
+
+	for (const auto& StartAbility : StartAbilities)
+	{
+		// 스타트스펙 초기화
+		FGameplayAbilitySpec StartSpec(StartAbility);
+		// 스펙 : 게임 어빌리티의 정보를 담은 구조체
+		
+		// 어빌리티 등록
+		ASC->GiveAbility(StartSpec);
+	}
 }
 
 void APanFountain::BeginPlay()
@@ -71,15 +89,19 @@ void APanFountain::BeginPlay()
  **************************************************************************************************/
 void APanFountain::TimerAction()
 {
-	if (!RotatingMovement->IsActive())
+	// 태그 초기화
+	FGameplayTagContainer TargetTag(TAG_ACTOR_ROTATE);
+
+	// 상태 태그 가져오기
+	if (!ASC->HasMatchingGameplayTag(TAG_ACTOR_ISROTATING))
 	{
-		// 활성화
-		RotatingMovement->Activate(true);
+		// 어빌리티 발동
+		ASC->TryActivateAbilitiesByTag(TargetTag);
 	}
 	else
 	{
-		// 비활성화
-		RotatingMovement->Deactivate();
+		// 발동 취소
+		ASC->CancelAbilities(&TargetTag);
 	}
 }
 
