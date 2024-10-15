@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GameAbility/PanGA_Rotate.h"
+#include "GameplayAbility/PanGA_Rotate.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include "Tag/PanGameplayTag.h"
 

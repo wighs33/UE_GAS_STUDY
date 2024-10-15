@@ -7,6 +7,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "PanCharacterControlData.h"
+#include "AbilitySystemComponent.h"
+#include "Player/PanPlayerState.h"
 
 APanCharacterPlayer::APanCharacterPlayer()
 {
@@ -66,21 +68,51 @@ void APanCharacterPlayer::BeginPlay()
 	SetCharacterControl(CurrentCharacterControlType);
 }
 
+UAbilitySystemComponent* APanCharacterPlayer::GetAbilitySystemComponent() const
+{
+	return ASC;
+}
+
+void APanCharacterPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// 플레이어 상태 얻기
+	if (APanPlayerState* PanPlayerState = GetPlayerState<APanPlayerState>())
+	{
+		// 플레이어 상태에서 ASC 얻기
+		ASC = PanPlayerState->GetAbilitySystemComponent();
+		// 어빌리티 등록
+		ASC->InitAbilityActorInfo(PanPlayerState, this);
+		for (const auto& StartInputAbility : StartInputAbilities)
+		{
+			// 스타트스펙 초기화
+			FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
+			// 스타트어빌리티의 키를 스타트 스펙의 아이디로 사용
+			StartSpec.InputID = StartInputAbility.Key;
+			// 어빌리티 등록
+			ASC->GiveAbility(StartSpec);
+		}
+		// 임시 주석
+		SetupGASInputComponent();
+		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
+		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	}
+}
+
 void APanCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// 향상된 입력 컴포넌트로 확장
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-
 	// 입력 액션과 액션 함수 바인딩
-	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::Attack);
 	EnhancedInputComponent->BindAction(ChangeControlAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ChangeCharacterControl);
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::QuaterMove);
+
+	SetupGASInputComponent();
 }
 
 /*************************************************************************************************
@@ -217,6 +249,51 @@ void APanCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	AddMovementInput(MoveDirection, MovementVectorSize);
 }
 
-void APanCharacterPlayer::Attack()
+void APanCharacterPlayer::SetupGASInputComponent()
 {
+	// 유효성 검사
+	if (IsValid(ASC) && IsValid(InputComponent))
+	{
+		// 향상된 입력 컴포넌트로 확장
+		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+		// 입력 액션과 액션 함수 바인딩
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 0);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APanCharacterPlayer::InputReleased, 0);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 1);
+	}
+}
+
+void APanCharacterPlayer::InputPressed(int32 InputId)
+{
+	// ASC에 등록된 스펙을 검사해 입력에 매핑된 GA 찾기
+	if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId))
+	{
+		// 스펙에 입력 알려줌
+		Spec->InputPressed = true;
+		if (Spec->IsActive())
+		{
+			// GA가 발동 중이면 입력이 왔다는 신호 전달
+			ASC->AbilitySpecInputPressed(*Spec);
+		}
+		else
+		{
+			// GA가 발동 중이 아니면 새롭게 발동
+			ASC->TryActivateAbility(Spec->Handle);
+		}
+	}
+}
+
+void APanCharacterPlayer::InputReleased(int32 InputId)
+{
+	// ASC에 등록된 스펙을 검사해 입력에 매핑된 GA 찾기
+	if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId))
+	{
+		// 스펙에 입력종료 알려줌
+		Spec->InputPressed = false;
+		if (Spec->IsActive())
+		{
+			// GA에게 입력이 끝났다는 신호 전달
+			ASC->AbilitySpecInputReleased(*Spec);
+		}
+	}
 }

@@ -6,9 +6,12 @@
 #include "Engine/DataAsset.h"
 #include "PanCharacterControlData.generated.h"
 
-/**
- * 
- */
+/*************************************************************************************************
+ * 시점에 따른 캐릭터 컨트롤 데이터
+ *
+ * @author	조현식
+ * @date	2024/10/14
+ **************************************************************************************************/
 UCLASS()
 class PANDORAS_API UPanCharacterControlData : public UPrimaryDataAsset
 {
