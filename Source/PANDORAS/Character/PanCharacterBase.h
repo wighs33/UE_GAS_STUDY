@@ -21,6 +21,8 @@ class PANDORAS_API APanCharacterBase : public ACharacter
 public:
 	APanCharacterBase();
 
+	FORCEINLINE virtual class UAnimMontage* GetComboActionMontage() const { return ComboActionMontage; }
+
 protected:
 	virtual void SetCharacterControlData(const class UPanCharacterControlData* CharacterControlData);
 
@@ -28,4 +30,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = CharacterControl, Meta = (AllowPrivateAccess = "true"))
 	TMap<ECharacterControlType, class UPanCharacterControlData*> CharacterControlManager;
 
+// 콤보 액션 섹션
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> ComboActionMontage;
+
+	void ProcessComboCommand();
 };

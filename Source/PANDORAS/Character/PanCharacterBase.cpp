@@ -75,7 +75,7 @@ APanCharacterBase::APanCharacterBase()
  *
  * @author	조현식
  * @date	2024/10/14
- * @param	
+ * @param	컨트롤 데이터
  * @return	
  **************************************************************************************************/
 void APanCharacterBase::SetCharacterControlData(const UPanCharacterControlData* CharacterControlData)
@@ -85,5 +85,21 @@ void APanCharacterBase::SetCharacterControlData(const UPanCharacterControlData* 
 	GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
 	GetCharacterMovement()->bUseControllerDesiredRotation = CharacterControlData->bUseControllerDesiredRotation;
 	GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
+}
+
+/*************************************************************************************************
+ * 콤보 액션 몽타주를 플레이함
+ *
+ * @author	조현식
+ * @date	2024/11/12
+ * @param	
+ * @return	
+ **************************************************************************************************/
+void APanCharacterBase::ProcessComboCommand()
+{
+	// 스켈레탈 메시로 부터 애님인스턴스 가져옴
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	// 애님인스턴스를 통해 [콤보 액션 몽타주]를 플레이
+	AnimInstance->Montage_Play(ComboActionMontage);
 }
 

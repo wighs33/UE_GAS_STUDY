@@ -111,6 +111,7 @@ void APanCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::QuaterMove);
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::Attack);
 
 	SetupGASInputComponent();
 }
@@ -296,4 +297,18 @@ void APanCharacterPlayer::InputReleased(int32 InputId)
 			ASC->AbilitySpecInputReleased(*Spec);
 		}
 	}
+}
+
+/*************************************************************************************************
+ * 공격 모션 실행
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
+void APanCharacterPlayer::Attack()
+{
+	// 베이스캐릭터의 콤보 공격 실행
+	ProcessComboCommand();
 }

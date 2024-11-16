@@ -75,6 +75,8 @@ protected:
 	// 현재 시점
 	ECharacterControlType CurrentCharacterControlType = ECharacterControlType::Quater;
 
+	void Attack();
+
 // 어빌리티
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
