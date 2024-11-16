@@ -93,13 +93,21 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 			// 어빌리티 등록
 			ASC->GiveAbility(StartSpec);
 		}
-		// 임시 주석
+
 		SetupGASInputComponent();
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
 	}
 }
 
+/*************************************************************************************************
+ * 입력 값 초기화가 필요할 시(게임 시작, 액터 소유) 호출
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
 void APanCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -111,7 +119,6 @@ void APanCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::QuaterMove);
-	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::Attack);
 
 	SetupGASInputComponent();
 }
@@ -193,6 +200,15 @@ void APanCharacterPlayer::SetCharacterControlData(const UPanCharacterControlData
 	CameraBoom->bDoCollisionTest = CharacterControlData->bDoCollisionTest;
 }
 
+/*************************************************************************************************
+ * 숄더 뷰일 때 이동 키 입력 시 호출
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param
+ * @return
+ **************************************************************************************************/
+
 void APanCharacterPlayer::ShoulderMove(const FInputActionValue& Value)
 {
 	// 이동 오프셋
@@ -211,6 +227,14 @@ void APanCharacterPlayer::ShoulderMove(const FInputActionValue& Value)
 	AddMovementInput(RightDirection, MovementVector.Y);
 }
 
+/*************************************************************************************************
+ * 숄더 뷰일 때 시야 조정 시 호출
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
 void APanCharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 {
 	// 회전 오프셋(Yaw, Roll)
@@ -222,6 +246,14 @@ void APanCharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxisVector.Y);
 }
 
+/*************************************************************************************************
+ * 쿼터 뷰일 때 이동 키 입력 시 호출
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
 void APanCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 {
 	// 이동 벡터
@@ -250,6 +282,14 @@ void APanCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	AddMovementInput(MoveDirection, MovementVectorSize);
 }
 
+/*************************************************************************************************
+ * 점프와 공격은 [게임 어빌리티 시스템]으로 입력 받음
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
 void APanCharacterPlayer::SetupGASInputComponent()
 {
 	// 유효성 검사
@@ -264,6 +304,14 @@ void APanCharacterPlayer::SetupGASInputComponent()
 	}
 }
 
+/*************************************************************************************************
+ * 스펙 ID의 입력이 들어왔을 때
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
 void APanCharacterPlayer::InputPressed(int32 InputId)
 {
 	// ASC에 등록된 스펙을 검사해 입력에 매핑된 GA 찾기
@@ -284,6 +332,14 @@ void APanCharacterPlayer::InputPressed(int32 InputId)
 	}
 }
 
+/*************************************************************************************************
+ * 스펙 ID의 입력이 해제되었을 때
+ *
+ * @author	조현식
+ * @date	2024/11/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
 void APanCharacterPlayer::InputReleased(int32 InputId)
 {
 	// ASC에 등록된 스펙을 검사해 입력에 매핑된 GA 찾기
@@ -297,18 +353,4 @@ void APanCharacterPlayer::InputReleased(int32 InputId)
 			ASC->AbilitySpecInputReleased(*Spec);
 		}
 	}
-}
-
-/*************************************************************************************************
- * 공격 모션 실행
- *
- * @author	조현식
- * @date	2024/11/17
- * @param	
- * @return	
- **************************************************************************************************/
-void APanCharacterPlayer::Attack()
-{
-	// 베이스캐릭터의 콤보 공격 실행
-	ProcessComboCommand();
 }
