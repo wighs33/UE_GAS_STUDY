@@ -43,7 +43,7 @@ void UPanGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	//// 블루프린트로 구현
+	//// 태스크 부분을 블루프린트로 대체
 	//{
 	//	// 태스크 생성
 	//	UPanAT_JumpAndWaitForLanding* JumpAndWaitingForLandingTask = UPanAT_JumpAndWaitForLanding::CreateTask(this);
@@ -55,7 +55,7 @@ void UPanGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 }
 
 /*************************************************************************************************
- * 입력이 해제될 때 호출
+ * 어빌리티 종료 전 입력이 해제될 때 호출
  *
  * @author	조현식
  * @date	2024/10/16

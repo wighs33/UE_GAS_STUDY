@@ -94,8 +94,11 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 			ASC->GiveAbility(StartSpec);
 		}
 
+		// 멀티플레이일때 호출
 		SetupGASInputComponent();
+		// 플레이어 컨트롤러로 캐스팅
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
+		// 어빌리티 시스템 디버깅 실행
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
 	}
 }
@@ -120,6 +123,7 @@ void APanCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::QuaterMove);
 
+	// 게임 어빌리티 시스템으로 입력 바인딩
 	SetupGASInputComponent();
 }
 
