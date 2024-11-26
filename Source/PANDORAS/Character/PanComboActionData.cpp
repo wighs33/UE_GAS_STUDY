@@ -3,3 +3,6 @@
 
 #include "Character/PanComboActionData.h"
 
+UPanComboActionData::UPanComboActionData()
+{
+}

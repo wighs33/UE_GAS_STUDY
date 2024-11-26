@@ -1,4 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ /**************************************************************************************************
+ * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\Character\PanCharacterPlayer.h
+ *
+ * #include "Character\PanCharacterPlayer.h"
+ * 확장 캐릭터 (플레이어)
+ * 
+ * @author	조현식
+ * @date	2024-04-06
+ *
+ * Copyright (c) 2024 LaughLife. All rights reserved
+ **************************************************************************************************/
 
 #pragma once
 
@@ -8,12 +18,6 @@
 #include "AbilitySystemInterface.h"
 #include "PanCharacterPlayer.generated.h"
 
-/*************************************************************************************************
- * 플레이어의 캐릭터
- *
- * @author	조현식
- * @date	2024/10/14
- **************************************************************************************************/
 UCLASS()
 class PANDORAS_API APanCharacterPlayer : public APanCharacterBase, public IAbilitySystemInterface
 {
@@ -74,8 +78,6 @@ protected:
 
 	// 현재 시점
 	ECharacterControlType CurrentCharacterControlType = ECharacterControlType::Quater;
-
-	void Attack();
 
 // 어빌리티
 protected:

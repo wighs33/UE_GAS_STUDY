@@ -1,4 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ /**************************************************************************************************
+ * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\Character\PanCharacterBase.h
+ *
+ * #include "Character\PanCharacterBase.h"
+ * 기본 캐릭터
+ * 
+ * @author	조현식
+ * @date	2024-04-06
+ *
+ * Copyright (c) 2024 LaughLife. All rights reserved
+ **************************************************************************************************/
 
 #pragma once
 
@@ -22,6 +32,8 @@ public:
 	APanCharacterBase();
 
 	FORCEINLINE virtual class UAnimMontage* GetComboActionMontage() const { return ComboActionMontage; }
+	FORCEINLINE class UPanComboActionData* GetComboActionData() const { return ComboActionData; }
+	//FORCEINLINE class UAnimMontage* GetDeadMontage() const { return DeadMontage; }
 
 protected:
 	virtual void SetCharacterControlData(const class UPanCharacterControlData* CharacterControlData);
@@ -35,5 +47,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> ComboActionMontage;
 
-	void ProcessComboCommand();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPanComboActionData> ComboActionData;
+
+	// PanGA_Attack에서 구현
+	//void ProcessComboCommand();
+	//void ComboActionBegin();
+	//void ComboActionEnd(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
+	//void SetComboCheckTimer();
+	//void ComboCheck();
+	//int32 CurrentCombo = 0;
+	//FTimerHandle ComboTimerHandle;
+	//bool HasNextComboCommand = false;
+
+//// 피격
+//protected:
+//	virtual void AttackHitCheck() override;
+//	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+// 사망
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> DeadMontage;
+//
+//	virtual void SetDead();
+//	void PlayDeadAnimation();
+//
+//	float DeadEventDelayTime = 5.0f;
 };
