@@ -2,7 +2,7 @@
  * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\GameplayEffect\PanGE_AttackDamage.h
  *
  * #include "GameplayEffect/PanGE_AttackDamage.h"
- * 데미지 관리 객체
+ * 데미지 관리 객체 (블루프린트로 변경)
  * 
  * @author	조현식
  * @date	2024-04-06

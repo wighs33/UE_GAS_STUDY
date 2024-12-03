@@ -32,4 +32,10 @@ public:
 protected:
 	UFUNCTION()
 	void OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+
+	// 공격 데미지 이펙트
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<class UGameplayEffect> AttackDamageEffect;
+
+	float CurrentLevel;
 };

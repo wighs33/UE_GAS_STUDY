@@ -4,3 +4,4 @@
 
 #define TAG_ACTOR_ROTATE FGameplayTag :: RequestGameplayTag(FName("Actor.Action.Rotate"))
 #define TAG_ACTOR_ISROTATING FGameplayTag :: RequestGameplayTag(FName("Actor.State.IsRotating"))
+#define TAG_DATA_DAMAGE FGameplayTag::RequestGameplayTag(FName("Data.Damage"))

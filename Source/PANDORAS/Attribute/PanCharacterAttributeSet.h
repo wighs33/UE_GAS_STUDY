@@ -40,34 +40,36 @@ public:
 	ATTRIBUTE_ACCESSORS(UPanCharacterAttributeSet, MaxAttackRate);
 	ATTRIBUTE_ACCESSORS(UPanCharacterAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UPanCharacterAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UPanCharacterAttributeSet, Damage);
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
 protected:
 	// 현재 공격 범위
 	UPROPERTY(BlueprintReadOnly, Category="Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData AttackRange;
+	FGameplayAttributeData AttackRange = 100.f;
 
 	// 최대 공격 범위
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxAttackRange;
+	FGameplayAttributeData MaxAttackRange = 300.f;
 
 	// 현재 공격 반지름
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData AttackRadius;
+	FGameplayAttributeData AttackRadius = 50.f;
 
 	// 최대 공격 반지름
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxAttackRadius;
+	FGameplayAttributeData MaxAttackRadius = 150.f;
 
 	// 현재 공격력
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData AttackRate;
+	FGameplayAttributeData AttackRate = 30.f;
 
 	// 최대 공격력
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxAttackRate;
+	FGameplayAttributeData MaxAttackRate = 100.f;
 
 	// 현재 체력
 	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true))
@@ -75,7 +77,11 @@ protected:
 
 	// 최대 체력
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxHealth;
+	FGameplayAttributeData MaxHealth = 100.f;
+
+	// 데미지
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData Damage = 0.f;
 
 	// 체력 이펙트에서 접근할 수 있도록 friend 지정
 	friend class UPanGE_AttackDamage;

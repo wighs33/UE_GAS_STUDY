@@ -6,6 +6,7 @@
 #include "GameplayAbility/AbilityTask/PanAT_Trace.h"
 #include "GameplayAbility/TargetActor/PanTA_Trace.h"
 #include "Attribute/PanCharacterAttributeSet.h"
+#include "Tag/PanGameplayTag.h"
 
 #include "PANDORAS.h"
 
@@ -26,6 +27,10 @@ UPanGA_AttackHitCheck::UPanGA_AttackHitCheck()
 void UPanGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	// 전송받은 데이터의 값을 [현재 레벨(콤보 공격 횟수)]로 설정
+	CurrentLevel = TriggerEventData->EventMagnitude;
+
 	// 태스크 생성
 	UPanAT_Trace* AttackTraceTask = UPanAT_Trace::CreateTask(this, APanTA_Trace::StaticClass());
 	// 태스크의 트레이스 결과 델리게이트에 함수 등록
@@ -52,29 +57,41 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 
 		// ActorInfo로부터 ASC를 가져오고 불가능하면 에러를 발생
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-		// 피격 결과로 부터 타겟 ASC 가져오기
-		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-		// 소스ASC와 타겟ASC 둘중 하나만 없어도 로직스킵
-		if (!SourceASC || !TargetASC)
-		{
-			PAN_LOG(LogGAS, Error, TEXT("ASC not found!"));
-			return;
-		}
 		// 소스 어트리뷰트로 정보를 가져온다.
 		const UPanCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UPanCharacterAttributeSet>();
-		// 타겟 어트리뷰트는 값을 변경해야 하기 때문에 const_cast로 const를 없앤다
-		UPanCharacterAttributeSet* TargetAttribute = const_cast<UPanCharacterAttributeSet*>(TargetASC->GetSet<UPanCharacterAttributeSet>());
-		// 소스 어트리뷰트와 타겟 어트리뷰트 둘중 하나만 없어도 로직스킵
-		if (!SourceAttribute || !TargetAttribute)
-		{
-			PAN_LOG(LogGAS, Error, TEXT("ASC not found!"));
-			return;
-		}
-		// 공격자의 공격력을 데미지로 설정
-		const float AttackDamage = SourceAttribute->GetAttackRate();
-		// 피격자의 체력에서 데미지만큼 차감
-		TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
 
+		// BPGE_AttackDamage(게임 이펙트 블루프린트)에서 아래 로직을 구현하기 때문에 주석처리
+		//// 피격 결과로 부터 타겟 ASC 가져오기
+		//UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+		//// 소스ASC와 타겟ASC 둘중 하나만 없어도 로직스킵
+		//if (!SourceASC || !TargetASC)
+		//{
+		//	PAN_LOG(LogGAS, Error, TEXT("ASC not found!"));
+		//	return;
+		//}
+		//// 타겟 어트리뷰트는 값을 변경해야 하기 때문에 const_cast로 const를 없앤다
+		//UPanCharacterAttributeSet* TargetAttribute = const_cast<UPanCharacterAttributeSet*>(TargetASC->GetSet<UPanCharacterAttributeSet>());
+		//// 소스 어트리뷰트와 타겟 어트리뷰트 둘중 하나만 없어도 로직스킵
+		//if (!SourceAttribute || !TargetAttribute)
+		//{
+		//	PAN_LOG(LogGAS, Error, TEXT("ASC not found!"));
+		//	return;
+		//}
+		//// 공격자의 공격력을 데미지로 설정
+		//const float AttackDamage = SourceAttribute->GetAttackRate();
+		//// 피격자의 체력에서 데미지만큼 차감
+		//TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
+
+		// 레벨에 따른 GE스펙을 생성한다.
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
+		// GE스펙핸들이 유효하다면
+		if (EffectSpecHandle.IsValid())
+		{
+			// BPGE_AttackDamage(게임 이펙트 블루프린트)에서 SetByCaller 옵션을 통해 태그에 속성값 전달
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_DATA_DAMAGE, -SourceAttribute->GetAttackRate());
+			// 지정된 GE스펙을 타겟액터의 ASC에 적용
+			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
+		}
 	}
 
 	bool bReplicatedEndAbility = true;

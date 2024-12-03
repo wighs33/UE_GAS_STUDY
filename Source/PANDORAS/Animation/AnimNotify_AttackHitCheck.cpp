@@ -30,9 +30,12 @@ void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 		AActor* OwnerActor = MeshComp->GetOwner();
 		if (OwnerActor)
 		{
-			// 임시 이벤트
+			// 페이로드 데이터 (전송 데이터에서 부가 데이터를 제외한 목적 데이터)
 			FGameplayEventData PayloadData;
+			// 콤보 공격 횟수를 값으로 설정
+			PayloadData.EventMagnitude = ComboAttackLevel;
 			// 액터에 태그를 넣어서 이벤트를 발동시킨다
+			// 어빌리티의 기본 함수인 ActivateAbility의 TriggerEventData로 데이터가 전송됨
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggetGameplayTag, PayloadData);
 		}
 

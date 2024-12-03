@@ -32,4 +32,7 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	FGameplayTag TriggetGameplayTag;
+
+	UPROPERTY(EditAnywhere)
+	float ComboAttackLevel = 1.0f;
 };
