@@ -68,11 +68,27 @@ void APanCharacterPlayer::BeginPlay()
 	SetCharacterControl(CurrentCharacterControlType);
 }
 
+/*************************************************************************************************
+ * ASC 게터
+ *
+ * @author	조현식
+ * @date	2024/12/02
+ * @param	
+ * @return	
+ **************************************************************************************************/
 UAbilitySystemComponent* APanCharacterPlayer::GetAbilitySystemComponent() const
 {
 	return ASC;
 }
 
+/*************************************************************************************************
+ * 빙의될 때
+ *
+ * @author	조현식
+ * @date	2024/12/02
+ * @param	
+ * @return	
+ **************************************************************************************************/
 void APanCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -84,11 +100,20 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 		ASC = PanPlayerState->GetAbilitySystemComponent();
 		// 어빌리티 등록
 		ASC->InitAbilityActorInfo(PanPlayerState, this);
+
+		for (const auto& StartAbility : StartAbilities)
+		{
+			// 스타트스펙 초기화
+			FGameplayAbilitySpec StartSpec(StartAbility);
+			// 어빌리티 등록
+			ASC->GiveAbility(StartSpec);
+		}
+
 		for (const auto& StartInputAbility : StartInputAbilities)
 		{
 			// 스타트스펙 초기화
 			FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
-			// 스타트어빌리티의 키를 스타트 스펙의 아이디로 사용
+			// StartInputAbilities의 키를 스타트스펙의 아이디로 사용
 			StartSpec.InputID = StartInputAbility.Key;
 			// 어빌리티 등록
 			ASC->GiveAbility(StartSpec);

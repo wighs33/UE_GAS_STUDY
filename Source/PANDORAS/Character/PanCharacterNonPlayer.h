@@ -14,19 +14,26 @@
 
 #include "CoreMinimal.h"
 #include "Character/PanCharacterBase.h"
+#include "AbilitySystemInterface.h"
 #include "PanCharacterNonPlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PANDORAS_API APanCharacterNonPlayer : public APanCharacterBase
+class PANDORAS_API APanCharacterNonPlayer : public APanCharacterBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
 public:
 	APanCharacterNonPlayer();
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void PossessedBy(AController* NewController) override;
 
-//protected:
-//	void SetDead() override;
+protected:
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TObjectPtr<class UAbilitySystemComponent> ASC;
+
+	UPROPERTY()
+	TObjectPtr<class UPanCharacterAttributeSet> AttributeSet;
 };

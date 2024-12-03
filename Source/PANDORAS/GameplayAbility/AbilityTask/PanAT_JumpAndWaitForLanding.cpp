@@ -39,6 +39,7 @@ void UPanAT_JumpAndWaitForLanding::Activate()
 	Character->LandedDelegate.AddDynamic(this, &UPanAT_JumpAndWaitForLanding::OnLandedCallback);
 	// 캐릭터 점프
 	Character->Jump();
+	// 아바타에 의존적인 작업이 필요하므로 대기 설정
 	SetWaitingOnAvatar();
 }
 

@@ -7,7 +7,7 @@
 
 UPanGA_Jump::UPanGA_Jump()
 {
-	// 인스턴스 정책 (InstancedPerActor : 액터마다 하나의 인스턴스 생성)
+	// 인스턴스 옵션 (InstancedPerActor : 액터마다 하나의 인스턴스 생성)
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
@@ -49,7 +49,7 @@ void UPanGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	//	UPanAT_JumpAndWaitForLanding* JumpAndWaitingForLandingTask = UPanAT_JumpAndWaitForLanding::CreateTask(this);
 	//	// 태스크의 착지 델리게이트에 함수 등록
 	//	JumpAndWaitingForLandingTask->OnComplete.AddDynamic(this, &UPanGA_Jump::OnLandedCallback);
-	//	// 태스크 활성화
+	//	// 태스크 실행 준비
 	//	JumpAndWaitingForLandingTask->ReadyForActivation();
 	//}
 }

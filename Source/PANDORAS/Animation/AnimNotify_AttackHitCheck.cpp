@@ -2,10 +2,19 @@
 
 
 #include "Animation/AnimNotify_AttackHitCheck.h"
-#include "Interface/PanAnimationAttackInterface.h"
+#include "AbilitySystemBlueprintLibrary.h"
+
+UAnimNotify_AttackHitCheck::UAnimNotify_AttackHitCheck()
+{
+}
+
+FString UAnimNotify_AttackHitCheck::GetNotifyName_Implementation() const
+{
+	return TEXT("AttackHitCheck");
+}
 
 /*************************************************************************************************
- * 노티파이에 걸렸을 때 피격판정
+ * 노티파이에 걸렸을 때 대상에게 공격이 맞았는 지 판정
  *
  * @author	조현식
  * @date	2024/11/27
@@ -18,11 +27,23 @@ void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 	if (MeshComp)
 	{
 		// 스켈레탈 메시로부터 캐릭터 얻기
-		IPanAnimationAttackInterface* AttackPawn = Cast<IPanAnimationAttackInterface>(MeshComp->GetOwner());
-		if (AttackPawn)
+		AActor* OwnerActor = MeshComp->GetOwner();
+		if (OwnerActor)
 		{
-			// 캐릭터의 피격 판정
-			AttackPawn->AttackHitCheck();
+			// 임시 이벤트
+			FGameplayEventData PayloadData;
+			// 액터에 태그를 넣어서 이벤트를 발동시킨다
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggetGameplayTag, PayloadData);
 		}
+
+
+
+		//// 스켈레탈 메시로부터 캐릭터 얻기
+		//IPanAnimationAttackInterface* AttackPawn = Cast<IPanAnimationAttackInterface>(MeshComp->GetOwner());
+		//if (AttackPawn)
+		//{
+		//	// 캐릭터의 공격 판정
+		//	AttackPawn->AttackHitCheck();
+		//}
 	}
 }

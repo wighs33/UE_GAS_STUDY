@@ -83,8 +83,12 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC = nullptr;
+
+	// 에디터에서 [기본 어빌리티] 그룹 설정
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
 	
-	// 에디터에서 시작 어빌리티 그룹 설정
+	// 에디터에서 [기본 입력 어빌리티] 그룹 설정
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
 };

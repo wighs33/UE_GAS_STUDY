@@ -8,7 +8,7 @@
 
 UPanGA_Attack::UPanGA_Attack()
 {
-	// 인스턴스 정책 (InstancedPerActor : 액터마다 하나의 인스턴스 생성)
+	// 인스턴스 옵션 (InstancedPerActor : 액터마다 하나의 인스턴스 생성)
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
