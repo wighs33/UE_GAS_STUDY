@@ -102,7 +102,6 @@ APanCharacterBase::APanCharacterBase()
  * @author	조현식
  * @date	2024/10/14
  * @param	컨트롤 데이터
- * @return	
  **************************************************************************************************/
 void APanCharacterBase::SetCharacterControlData(const UPanCharacterControlData* CharacterControlData)
 {
@@ -111,6 +110,39 @@ void APanCharacterBase::SetCharacterControlData(const UPanCharacterControlData* 
 	GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
 	GetCharacterMovement()->bUseControllerDesiredRotation = CharacterControlData->bUseControllerDesiredRotation;
 	GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
+}
+
+/*************************************************************************************************
+ * 사망 처리
+ *
+ * @author	조현식
+ * @date	2024/12/05
+ **************************************************************************************************/
+void APanCharacterBase::SetDead()
+{
+	// 이동 불가 설정
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	// 사망 몽타주 재생
+	PlayDeadAnimation();
+
+	// 충돌감지 끄기
+	SetActorEnableCollision(false);
+}
+
+/*************************************************************************************************
+ * 사망 몽타주 재생
+ *
+ * @author	조현식
+ * @date	2024/12/05
+ **************************************************************************************************/
+void APanCharacterBase::PlayDeadAnimation()
+{
+	// 메시로부터 애님인스턴스 얻기
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	// 기존 몽타주 중지
+	AnimInstance->StopAllMontages(0.0f);
+	// 사망 몽타주 재생
+	AnimInstance->Montage_Play(DeadMontage, 1.0f);
 }
 
 ///*************************************************************************************************
@@ -282,27 +314,3 @@ void APanCharacterBase::SetCharacterControlData(const UPanCharacterControlData* 
 //	return DamageAmount;
 //}
 //
-///*************************************************************************************************
-//* 사망 처리
-//**************************************************************************************************/
-//void APanCharacterBase::SetDead()
-//{
-//	// 이동 불가 설정
-//	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-//	PlayDeadAnimation();
-//
-//	// 충돌감지 끄기
-//	SetActorEnableCollision(false);
-//}
-//
-///*************************************************************************************************
-//* 사망 몽타주 재생
-//**************************************************************************************************/
-//void APanCharacterBase::PlayDeadAnimation()
-//{
-//	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-//	// 기존 몽타주 중지
-//	AnimInstance->StopAllMontages(0.0f);
-//	// 사망 몽타주 재생
-//	AnimInstance->Montage_Play(DeadMontage, 1.0f);
-//}

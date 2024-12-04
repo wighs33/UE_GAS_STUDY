@@ -27,13 +27,33 @@ class PANDORAS_API APanCharacterNonPlayer : public APanCharacterBase, public IAb
 	
 public:
 	APanCharacterNonPlayer();
+
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void SetDead() override;
+
+	UFUNCTION()
+	virtual void OnOutOfHealth();
 
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
+	// 데이터 모음
 	UPROPERTY()
 	TObjectPtr<class UPanCharacterAttributeSet> AttributeSet;
+
+	// 시작 GE
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<class UGameplayEffect> InitStatEffect;
+
+	// 레벨
+	UPROPERTY(EditAnywhere, Category = GAS)
+	float Level;
+
+// UI
+protected:
+	// HP바
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UPanWidgetComponent> HpBar;
 };
