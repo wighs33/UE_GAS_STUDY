@@ -9,16 +9,21 @@
 #include "PanCharacterControlData.h"
 #include "AbilitySystemComponent.h"
 #include "Player/PanPlayerState.h"
+#include "UI/PanWidgetComponent.h"
+#include "UI/PanUserWidget.h"
+#include "Attribute/PanCharacterAttributeSet.h"
 
 APanCharacterPlayer::APanCharacterPlayer()
 {
 	// 컴포넌트 생성
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	HpBar = CreateDefaultSubobject<UPanWidgetComponent>(TEXT("Widget"));
 
 	// 종속 관계 설정
 	CameraBoom->SetupAttachment(RootComponent);
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	HpBar->SetupAttachment(GetMesh());
 
 	// 스프링암 길이
 	CameraBoom->TargetArmLength = 400.f;
@@ -27,7 +32,7 @@ APanCharacterPlayer::APanCharacterPlayer()
 	CameraBoom->bUsePawnControlRotation = true;
 	FollowCamera->bUsePawnControlRotation = false;
 
-	// 입력 액션 로드
+	// 입력 액션 애셋 로드
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionJumpRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Pandoras/Input/Actions/IA_Jump.IA_Jump'"));
 	if (nullptr != InputActionJumpRef.Object)
 	{
@@ -57,6 +62,23 @@ APanCharacterPlayer::APanCharacterPlayer()
 	if (nullptr != InputActionQuaterMoveRef.Object)
 	{
 		QuaterMoveAction = InputActionQuaterMoveRef.Object;
+	}
+
+	// HP바 위치는 캐릭터 머리 위
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+	// HP바 애셋 로드
+	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/Pandoras/UI/WBP_HpBar.WBP_HpBar_C"));
+	// 클래스가 유효하다면
+	if (HpBarWidgetRef.Class)
+	{
+		// 참조할 위젯
+		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
+		// 화면 공간에 렌더링
+		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
+		// 크기는 2D로 설정
+		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
+		// 충돌 영역 없애기
+		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
@@ -100,6 +122,14 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 		ASC = PanPlayerState->GetAbilitySystemComponent();
 		// 어빌리티 등록
 		ASC->InitAbilityActorInfo(PanPlayerState, this);
+
+		// 어트리뷰트 모음 얻는데 성공한다면
+		const UPanCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPanCharacterAttributeSet>();
+		if (CurrentAttributeSet)
+		{
+			// 체력 고갈 시점에 콜백함수 바인딩
+			CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+		}
 
 		for (const auto& StartAbility : StartAbilities)
 		{
@@ -382,4 +412,17 @@ void APanCharacterPlayer::InputReleased(int32 InputId)
 			ASC->AbilitySpecInputReleased(*Spec);
 		}
 	}
+}
+
+/*************************************************************************************************
+ * 체력 고갈 시점에 호출
+ *
+ * @author	조현식
+ * @date	2024/12/05
+ * @param
+ * @return
+ **************************************************************************************************/
+void APanCharacterPlayer::OnOutOfHealth()
+{
+	SetDead();
 }

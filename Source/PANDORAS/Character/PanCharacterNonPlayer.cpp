@@ -4,12 +4,35 @@
 #include "Character/PanCharacterNonPlayer.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PanCharacterAttributeSet.h"
+#include "UI/PanWidgetComponent.h"
+#include "UI/PanUserWidget.h"
 
 APanCharacterNonPlayer::APanCharacterNonPlayer()
 {
 	// 컴포넌트 생성
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 	AttributeSet = CreateDefaultSubobject<UPanCharacterAttributeSet>(TEXT("AttributeSet"));
+	HpBar = CreateDefaultSubobject<UPanWidgetComponent>(TEXT("Widget"));
+
+	// 종속 관계 설정
+	HpBar->SetupAttachment(GetMesh());
+
+	// HP바 위치는 캐릭터 머리 위
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+	// HP바 애셋 로드
+	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/Pandoras/UI/WBP_HpBar.WBP_HpBar_C"));
+	// 클래스가 유효하다면
+	if (HpBarWidgetRef.Class)
+	{
+		// 참조할 위젯
+		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
+		// 화면 공간에 렌더링
+		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
+		// 크기는 2D로 설정
+		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
+		// 충돌 영역 없애기
+		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 /*************************************************************************************************
@@ -39,6 +62,8 @@ void APanCharacterNonPlayer::PossessedBy(AController* NewController)
 
 	// 어빌리티 등록
 	ASC->InitAbilityActorInfo(this, this);
+	// 체력 고갈 시점에 콜백함수 바인딩
+	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
 	// 이펙트 컨텍스트 핸들 생성
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();

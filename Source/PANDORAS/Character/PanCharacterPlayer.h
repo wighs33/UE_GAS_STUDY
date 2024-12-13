@@ -76,6 +76,9 @@ protected:
 	void InputPressed(int32 InputId);
 	void InputReleased(int32 InputId);
 
+	UFUNCTION()
+	virtual void OnOutOfHealth();
+
 	// 현재 시점
 	ECharacterControlType CurrentCharacterControlType = ECharacterControlType::Quater;
 
@@ -91,4 +94,10 @@ protected:
 	// 에디터에서 [기본 입력 어빌리티] 그룹 설정
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
+
+
+// UI
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UPanWidgetComponent> HpBar;
 };

@@ -24,6 +24,9 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+// 1대다 블루프린트 호환 델리게이트
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthDelegate);
+
 UCLASS()
 class PANDORAS_API UPanCharacterAttributeSet : public UAttributeSet
 {
@@ -44,7 +47,10 @@ public:
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+
+	mutable FOutOfHealthDelegate OnOutOfHealth;
 
 protected:
 	// 현재 공격 범위
@@ -82,6 +88,9 @@ protected:
 	// 데미지
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage = 0.f;
+
+	// 체력 고갈 플래그
+	bool bOutOfHealth = false;
 
 	// 체력 이펙트에서 접근할 수 있도록 friend 지정
 	friend class UPanGE_AttackDamage;
