@@ -82,15 +82,24 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 		//// 피격자의 체력에서 데미지만큼 차감
 		//TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
 
-		// 레벨에 따른 GE스펙을 생성한다.
+		// 레벨에 따른 데미지 이펙트 GE스펙을 생성
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
 		// GE스펙핸들이 유효하다면
 		if (EffectSpecHandle.IsValid())
 		{
-			// BPGE_AttackDamage(게임 이펙트 블루프린트)에서 SetByCaller 옵션을 통해 태그에 속성값 전달
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_DATA_DAMAGE, -SourceAttribute->GetAttackRate());
+			//// BPGE_AttackDamage(게임 이펙트 블루프린트)에서 SetByCaller 옵션을 통해 태그에 속성값 전달
+			//EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_DATA_DAMAGE, -SourceAttribute->GetAttackRate());
 			// 지정된 GE스펙을 타겟액터의 ASC에 적용
 			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
+		}
+
+		// 버프 이펙트 GE스펙을 생성
+		FGameplayEffectSpecHandle BuffEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackBuffEffect);
+		// GE스펙핸들이 유효하다면
+		if (BuffEffectSpecHandle.IsValid())
+		{
+			// 지정된 GE스펙을 자신에게 적용
+			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, BuffEffectSpecHandle);
 		}
 	}
 
