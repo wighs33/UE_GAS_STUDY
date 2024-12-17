@@ -74,4 +74,9 @@ protected:
 	void PlayDeadAnimation();
 
 	float DeadEventDelayTime = 5.0f;
+
+// 무기
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USkeletalMeshComponent> Weapon;
 };

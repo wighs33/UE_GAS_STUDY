@@ -12,6 +12,7 @@
 #include "UI/PanWidgetComponent.h"
 #include "UI/PanUserWidget.h"
 #include "Attribute/PanCharacterAttributeSet.h"
+#include "Tag/PanGamePlayTag.h"
 
 APanCharacterPlayer::APanCharacterPlayer()
 {
@@ -79,6 +80,15 @@ APanCharacterPlayer::APanCharacterPlayer()
 		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		// 충돌 영역 없애기
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	// 무기 애셋 로드
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blunt/Blunt_Hellhammer/SK_Blunt_HellHammer.SK_Blunt_HellHammer'"));
+	// 오브젝트가 유효하다면
+	if (WeaponMeshRef.Object)
+	{
+		// TObjectPtr형식으로 저장
+		WeaponMesh = WeaponMeshRef.Object;
 	}
 }
 
@@ -425,4 +435,57 @@ void APanCharacterPlayer::InputReleased(int32 InputId)
 void APanCharacterPlayer::OnOutOfHealth()
 {
 	SetDead();
+}
+
+/*************************************************************************************************
+ * 무기 장착
+ *
+ * @author	조현식
+ * @date	2024/12/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
+void APanCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
+{
+	// 무기를 가지고 있다면
+	if (Weapon)
+	{
+		// 무기 메시 적용
+		Weapon->SetSkeletalMesh(WeaponMesh);
+		// 캐릭터 공격범위 가져오기
+		const float CurrentAttackRange = ASC->GetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRangeAttribute());
+		// 캐릭터 공격력 가져오기
+		const float CurrentAttackRate = ASC->GetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRateAttribute());
+		// 캐릭터 기본 공격 범위 증가 (+무기 공격 범위)
+		ASC->SetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRangeAttribute(), CurrentAttackRange + WeaponRange);
+		// 캐릭터 기본 공격력 증가 (+무기 공격력)
+		ASC->SetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate + WeaponAttackRate);
+	}
+}
+
+/*************************************************************************************************
+ * 무기 탈착
+ *
+ * @author	조현식
+ * @date	2024/12/17
+ * @param	
+ * @return	
+ **************************************************************************************************/
+void APanCharacterPlayer::UnequipWeapon(const FGameplayEventData* EventData)
+{
+	// 무기를 가지고 있다면
+	if (Weapon)
+	{
+		// 캐릭터 공격범위 가져오기
+		const float CurrentAttackRange = ASC->GetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRangeAttribute());
+		// 캐릭터 공격력 가져오기
+		const float CurrentAttackRate = ASC->GetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRateAttribute());
+		// 캐릭터 기본 공격 범위 감소 (-무기 공격 범위)
+		ASC->SetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRangeAttribute(), CurrentAttackRange - WeaponRange);
+		// 캐릭터 기본 공격력 감소 (-무기 공격력)
+		ASC->SetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate - WeaponAttackRate);
+		
+		// 메시 없애기
+		Weapon->SetSkeletalMesh(nullptr);
+	}
 }

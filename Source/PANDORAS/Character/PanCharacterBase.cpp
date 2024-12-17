@@ -21,7 +21,7 @@ APanCharacterBase::APanCharacterBase()
 
 	// 캡슐 크기
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.f);
-	// [캡슐 충돌 프로필]을 [커스텀 캡슐 프로필]로 설정
+	// 캡슐의 [충돌 프로필]을 [커스텀 캡슐 프로필]로 설정
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_PAN_CAPSULE);
 
 	// 캐릭터가 움직이는 방향에 맞춰 자동으로 회전하는 지

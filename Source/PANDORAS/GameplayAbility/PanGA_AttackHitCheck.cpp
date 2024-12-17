@@ -59,10 +59,10 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
 		// 소스 어트리뷰트로 정보를 가져온다.
 		const UPanCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UPanCharacterAttributeSet>();
+		// 피격 결과로 부터 타겟 ASC 가져오기
+		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 
 		// BPGE_AttackDamage(게임 이펙트 블루프린트)에서 아래 로직을 구현하기 때문에 주석처리
-		//// 피격 결과로 부터 타겟 ASC 가져오기
-		//UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 		//// 소스ASC와 타겟ASC 둘중 하나만 없어도 로직스킵
 		//if (!SourceASC || !TargetASC)
 		//{
@@ -82,7 +82,7 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 		//// 피격자의 체력에서 데미지만큼 차감
 		//TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
 
-		// 레벨에 따른 데미지 이펙트 GE스펙을 생성
+		// 레벨에 따른 데미지 GE스펙을 생성
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
 		// GE스펙핸들이 유효하다면
 		if (EffectSpecHandle.IsValid())
@@ -91,6 +91,18 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 			//EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_DATA_DAMAGE, -SourceAttribute->GetAttackRate());
 			// 지정된 GE스펙을 타겟액터의 ASC에 적용
 			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
+		
+			// 이펙트 컨텍스트 생성 (추가적인 정보를 담는 그릇)
+			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);
+			// 이펙트 컨텍스트에 충돌 결과 추가
+			CueContextHandle.AddHitResult(HitResult);
+			// GC 파라미터 선언
+			FGameplayCueParameters CueParam;
+			// GC 파라미터에 이펙트 컨텍스트 설정
+			CueParam.EffectContext = CueContextHandle;
+
+			// 태그를 통해 GC 실행
+			TargetASC->ExecuteGameplayCue(TAG_GAMEPLAYCUE_CHARACTER_ATTACKHIT, CueParam);
 		}
 
 		// 버프 이펙트 GE스펙을 생성

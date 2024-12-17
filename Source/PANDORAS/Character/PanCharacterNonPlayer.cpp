@@ -67,7 +67,7 @@ void APanCharacterNonPlayer::PossessedBy(AController* NewController)
 
 	// 이펙트 컨텍스트 핸들 생성
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-	// 소스 오브젝트 정보로 컨텍스트 구성
+	// 소스 오브젝트 정보로 컨텍스트 핸들구성
 	EffectContextHandle.AddSourceObject(this);
 	// 초기 GE, 레벨, 컨텍스트 핸들을 통해 GE스펙 핸들 생성
 	FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitStatEffect, Level, EffectContextHandle);

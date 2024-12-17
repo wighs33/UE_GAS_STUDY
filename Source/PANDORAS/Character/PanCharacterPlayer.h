@@ -76,9 +76,6 @@ protected:
 	void InputPressed(int32 InputId);
 	void InputReleased(int32 InputId);
 
-	UFUNCTION()
-	virtual void OnOutOfHealth();
-
 	// 현재 시점
 	ECharacterControlType CurrentCharacterControlType = ECharacterControlType::Quater;
 
@@ -98,6 +95,23 @@ protected:
 
 // UI
 protected:
+	UFUNCTION()
+	virtual void OnOutOfHealth();
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UPanWidgetComponent> HpBar;
+
+// 아이템
+protected:
+	void EquipWeapon(const FGameplayEventData* EventData);
+	void UnequipWeapon(const FGameplayEventData* EventData);
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	TObjectPtr<class USkeletalMesh> WeaponMesh;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float WeaponRange = 75.f;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float WeaponAttackRate = 100.f;
 };
