@@ -3,6 +3,8 @@
  *
  * #include "Tag/PanGamePlayTag.h"
  * 
+ * 태그는 이벤트의 이름으로 생각하자
+ * 
  * @author	조현식
  * @date	2024-04-06
  *

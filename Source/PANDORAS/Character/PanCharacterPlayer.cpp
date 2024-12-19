@@ -83,7 +83,7 @@ APanCharacterPlayer::APanCharacterPlayer()
 	}
 
 	// 무기 애셋 로드
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blunt/Blunt_Hellhammer/SK_Blunt_HellHammer.SK_Blunt_HellHammer'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Pandoras/Item/Weapon/Blade_DragonSword/SK_Blade_DragonSword.SK_Blade_DragonSword'"));
 	// 오브젝트가 유효하다면
 	if (WeaponMeshRef.Object)
 	{
@@ -132,6 +132,11 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 		ASC = PanPlayerState->GetAbilitySystemComponent();
 		// 어빌리티 등록
 		ASC->InitAbilityActorInfo(PanPlayerState, this);
+
+		// 무기 장착 태그에 신호가 오는 시점에 EquipWeapon 함수 바인딩 (SendGameplayEventToActor 함수를 통해 신호 전달받음)
+		ASC->GenericGameplayEventCallbacks.FindOrAdd(TAG_EVENT_CHARACTER_WEAPONEQUIP).AddUObject(this, &APanCharacterPlayer::EquipWeapon);
+		// 무기 탈착 태그에 신호가 오는 시점에 UnequipWeapon 함수 바인딩
+		ASC->GenericGameplayEventCallbacks.FindOrAdd(TAG_EVENT_CHARACTER_WEAPONUNEQUIP).AddUObject(this, &APanCharacterPlayer::UnequipWeapon);
 
 		// 어트리뷰트 모음 얻는데 성공한다면
 		const UPanCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPanCharacterAttributeSet>();
@@ -447,7 +452,7 @@ void APanCharacterPlayer::OnOutOfHealth()
  **************************************************************************************************/
 void APanCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
 {
-	// 무기를 가지고 있다면
+	// 무기 설정이 가능하다면
 	if (Weapon)
 	{
 		// 무기 메시 적용
@@ -473,7 +478,7 @@ void APanCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
  **************************************************************************************************/
 void APanCharacterPlayer::UnequipWeapon(const FGameplayEventData* EventData)
 {
-	// 무기를 가지고 있다면
+	// 무기 설정이 가능하다면
 	if (Weapon)
 	{
 		// 캐릭터 공격범위 가져오기

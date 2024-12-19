@@ -36,7 +36,7 @@ void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 			PayloadData.EventMagnitude = ComboAttackLevel;
 			// 액터에 태그를 넣어서 이벤트를 발동시킨다
 			// 어빌리티의 기본 함수인 ActivateAbility의 TriggerEventData로 데이터가 전송됨
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggetGameplayTag, PayloadData);
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggerGameplayTag, PayloadData);
 		}
 
 

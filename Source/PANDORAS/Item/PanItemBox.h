@@ -1,4 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ /**************************************************************************************************
+ * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\Item\PanItemBox.h
+ * 
+ * #include "Item/PanItemBox.h"
+ * 
+ * 아이템 박스
+ *
+ * @author	조현식
+ * @date	2024-04-06
+ *
+ * Copyright (c) 2024 LaughLife. All rights reserved
+ **************************************************************************************************/
 
 #pragma once
 
@@ -26,9 +37,6 @@ protected:
 	void InvokeGameplayCue(AActor* Target);
 
 protected:
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult);
-
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
@@ -43,7 +51,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS, Meta=(Categories=GameplayCue))
 	FGameplayTag GameplayCueTag;
-
-	UPROPERTY(EditAnywhere, Category = Item)
-	TObjectPtr<class UPanItemData> Item;
 };
