@@ -28,4 +28,7 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UPanCharacterAttributeSet> AttributeSet;
+
+	UPROPERTY()
+	TObjectPtr<class UPanCharacterSkillAttributeSet> SkillAttributeSet;
 };

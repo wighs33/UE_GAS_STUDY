@@ -2,7 +2,7 @@
  * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\Attribute\PanCharacterAttributeSet.h
  *
  * #include "CoreMinimal.h"
- * 게임 내 플레이어나 적을 구성하는 데이터 모음
+ * 게임 내 플레이어나 적을 구성하는 기본 데이터 모음
  * 
  * @author	조현식
  * @date	2024-04-06

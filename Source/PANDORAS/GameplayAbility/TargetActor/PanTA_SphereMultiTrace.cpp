@@ -7,11 +7,18 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Physics/PanCollision.h"
 #include "DrawDebugHelpers.h"
-//#include "Attribute/PanCharacterSkillAttributeSet.h"
+#include "Attribute/PanCharacterSkillAttributeSet.h"
 #include "Engine/OverlapResult.h"
 
 #include "PANDORAS.h"
 
+/*************************************************************************************************
+ * 충돌을 바탕으로 타겟 데이터 생성
+ *
+ * @author	조현식
+ * @date	2024/12/21
+ * @return	타겟 데이터 핸들
+ **************************************************************************************************/
 FGameplayAbilityTargetDataHandle APanTA_SphereMultiTrace::MakeTargetData() const
 {
 	// 원본액터를 캐릭터로 변환
@@ -26,18 +33,17 @@ FGameplayAbilityTargetDataHandle APanTA_SphereMultiTrace::MakeTargetData() const
 	}
 
 	// ASC로부터 [스킬 어트리뷰트 세트] 못 가져오면 로직스킵
-	//const UABCharacterSkillAttributeSet* SkillAttribute = ASC->GetSet<UABCharacterSkillAttributeSet>();
-	//if (!SkillAttribute)
-	//{
-	//	Pan_LOG(LogPan, Error, TEXT("SkillAttribute not found!"));
-	//	return FGameplayAbilityTargetDataHandle();
-	//}
+	const UPanCharacterSkillAttributeSet* SkillAttribute = ASC->GetSet<UPanCharacterSkillAttributeSet>();
+	if (!SkillAttribute)
+	{
+		PAN_LOG(LogGAS, Error, TEXT("SkillAttribute not found!"));
+		return FGameplayAbilityTargetDataHandle();
+	}
 
 	// 오버랩 결과 배열
 	TArray<FOverlapResult> Overlaps;
 	// 어트리뷰트에서 스킬범위 얻기
-	//const float SkillRadius = SkillAttribute->GetSkillRange();
-	const float SkillRadius = 800.0f;
+	const float SkillRadius = SkillAttribute->GetSkillRange();
 	// 캐릭터 위치
 	FVector Origin = Character->GetActorLocation();
 	// 충돌 쿼리 파라미터

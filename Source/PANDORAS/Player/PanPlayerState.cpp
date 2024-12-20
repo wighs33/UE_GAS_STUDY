@@ -4,12 +4,14 @@
 #include "Player/PanPlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PanCharacterAttributeSet.h"
+#include "Attribute/PanCharacterSkillAttributeSet.h"
 
 APanPlayerState::APanPlayerState()
 {
 	// 컴포넌트 생성
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 	AttributeSet = CreateDefaultSubobject<UPanCharacterAttributeSet>(TEXT("AttributeSet"));
+	SkillAttributeSet = CreateDefaultSubobject<UPanCharacterSkillAttributeSet>(TEXT("SkillAttributeSet"));
 
 	// 네트워크 동기화
 	//ASC->SetIsReplicated(true);
