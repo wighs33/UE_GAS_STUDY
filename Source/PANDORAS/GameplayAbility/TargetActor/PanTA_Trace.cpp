@@ -59,8 +59,8 @@ FGameplayAbilityTargetDataHandle APanTA_Trace::MakeTargetData() const
 	// 캐릭터로 변환
 	ACharacter* Character = CastChecked<ACharacter>(SourceActor);
 
+	// 원본액터에서 ASC 못 가져오면 로직스킵
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
-	// ASC가 없을 때 로직스킵
 	if (!ASC)
 	{
 		return FGameplayAbilityTargetDataHandle();

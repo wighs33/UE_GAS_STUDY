@@ -34,6 +34,18 @@ bool UPanGC_AttackHit::OnExecute_Implementation(AActor* Target, const FGameplayC
 		// 충돌 결과의 ImpactPoint로부터 파티클 이펙트를 스폰
 		UGameplayStatics::SpawnEmitterAtLocation(Target, ParticleSystem, HitResult->ImpactPoint, FRotator::ZeroRotator, true);
 	}
+	else
+	{
+		// 다수의 액터 정보가 들어온다면 타겟 액터마다
+		for (const auto& TargetActor : Parameters.EffectContext.Get()->GetActors())
+		{
+			if (TargetActor.Get())
+			{
+				// 충돌 결과의 ImpactPoint로부터 파티클 이펙트를 스폰
+				UGameplayStatics::SpawnEmitterAtLocation(Target, ParticleSystem, TargetActor.Get()->GetActorLocation(), FRotator::ZeroRotator, true);
+			}
+		}
+	}
 
 	return false;
 }

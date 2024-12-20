@@ -26,13 +26,15 @@ UPanGA_AttackHitCheck::UPanGA_AttackHitCheck()
  **************************************************************************************************/
 void UPanGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	//PAN_LOG(LogGAS, Log, TEXT("%s"), *TriggerEventData->EventTag.GetTagName().ToString());
+
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	// 전송받은 데이터의 값을 [현재 레벨(콤보 공격 횟수)]로 설정
 	CurrentLevel = TriggerEventData->EventMagnitude;
 
 	// 태스크 생성
-	UPanAT_Trace* AttackTraceTask = UPanAT_Trace::CreateTask(this, APanTA_Trace::StaticClass());
+	UPanAT_Trace* AttackTraceTask = UPanAT_Trace::CreateTask(this, TargetActorClass);
 	// 태스크의 트레이스 결과 델리게이트에 함수 등록
 	AttackTraceTask->OnComplete.AddDynamic(this, &UPanGA_AttackHitCheck::OnTraceResultCallback);
 	// 태스크 실행 준비
@@ -112,6 +114,30 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 		{
 			// 지정된 GE스펙을 자신에게 적용
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, BuffEffectSpecHandle);
+		}
+	}
+	//TargetDataHandle의 첫 번째 인덱스(0번 인덱스)에 액터 타겟이 존재한다면
+	else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
+	{
+		// 현재 어빌리티를 발동한 캐릭터가 가지고 있는 ASC를 획득
+		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
+		// 해당 GE를 가지고 레벨따른 GE스펙핸들 생성
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
+		// GE스펙핸들이 유효하다면
+		if (EffectSpecHandle.IsValid())
+		{
+			// 해당 GE스펙핸들을 타겟액터의 ASC에 적용 (데미지 받음)
+			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
+			// 이펙트 컨텍스트 생성 (추가적인 정보를 담는 그릇)
+			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);
+			// 이번 공격으로 히트한 대상 액터 목록을 Context에 추가
+			CueContextHandle.AddActors(TargetDataHandle.Data[0].Get()->GetActors(), false);
+			// Cue를 실행할 때 필요한 각종 정보를 담는 파라미터
+			FGameplayCueParameters CueParam;
+			// GC 파라미터에 이펙트 컨텍스트 설정(Cue 이펙트를 재생하는 쪽에서 누구를 대상으로 어떻게 재생할지 알 수 있음)
+			CueParam.EffectContext = CueContextHandle;
+			// 태그를 통해 GC 실행
+			SourceASC->ExecuteGameplayCue(TAG_GAMEPLAYCUE_CHARACTER_ATTACKHIT, CueParam);
 		}
 	}
 

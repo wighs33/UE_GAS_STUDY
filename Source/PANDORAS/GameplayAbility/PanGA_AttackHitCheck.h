@@ -16,9 +16,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "PanGA_AttackHitCheck.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class PANDORAS_API UPanGA_AttackHitCheck : public UGameplayAbility
 {
@@ -42,4 +40,8 @@ protected:
 	TSubclassOf<class UGameplayEffect> AttackBuffEffect;
 
 	float CurrentLevel;
+
+	// е╦╟ы ╬вем
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<class APanTA_Trace> TargetActorClass;
 };
