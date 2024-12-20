@@ -34,6 +34,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FORCEINLINE virtual class UAnimMontage* GetSkillActionMontage() const { return SkillActionMontage; }
+
 // 컨트롤
 protected:
 	void ChangeCharacterControl();
@@ -67,6 +69,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> QuaterMoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> SkillAction;
 
 	void ShoulderMove(const FInputActionValue& Value);
 	void ShoulderLook(const FInputActionValue& Value);
@@ -114,4 +119,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	float WeaponAttackRate = 100.f;
+
+// 스킬
+protected:
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<class UGameplayAbility> SkillAbilityClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<class UAnimMontage> SkillActionMontage;
 };

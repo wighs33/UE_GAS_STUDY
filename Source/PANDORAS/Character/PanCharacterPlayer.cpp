@@ -64,6 +64,11 @@ APanCharacterPlayer::APanCharacterPlayer()
 	{
 		QuaterMoveAction = InputActionQuaterMoveRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionSkillRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Pandoras/Input/Actions/IA_Skill.IA_Skill'"));
+	if (nullptr != InputActionSkillRef.Object)
+	{
+		SkillAction = InputActionSkillRef.Object;
+	}
 
 	// HP바 위치는 캐릭터 머리 위
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
@@ -89,6 +94,15 @@ APanCharacterPlayer::APanCharacterPlayer()
 	{
 		// TObjectPtr형식으로 저장
 		WeaponMesh = WeaponMeshRef.Object;
+	}
+
+	// 스킬 몽타주 로드
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKillActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Pandoras/Animation/AM_SkillAttack.AM_SkillAttack'"));
+	// 오브젝트가 유효하다면
+	if (SKillActionMontageRef.Object)
+	{
+		// TObjectPtr형식으로 저장
+		SkillActionMontage = SKillActionMontageRef.Object;
 	}
 }
 
@@ -375,6 +389,7 @@ void APanCharacterPlayer::SetupGASInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 0);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APanCharacterPlayer::InputReleased, 0);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 1);
+		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 2);
 	}
 }
 
@@ -457,6 +472,18 @@ void APanCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
 	{
 		// 무기 메시 적용
 		Weapon->SetSkeletalMesh(WeaponMesh);
+
+		// GA스펙 생성
+		FGameplayAbilitySpec NewSkillSpec(SkillAbilityClass);
+		// 인풋 아이디를 2번으로 설정
+		NewSkillSpec.InputID = 2;
+		// 해당 클래스가 어빌리티를 부여하지 않았다면
+		if (!ASC->FindAbilitySpecFromClass(SkillAbilityClass))
+		{
+			// 어빌리티 부여
+			ASC->GiveAbility(NewSkillSpec);
+		}
+
 		// 캐릭터 공격범위 가져오기
 		const float CurrentAttackRange = ASC->GetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRangeAttribute());
 		// 캐릭터 공격력 가져오기
@@ -490,6 +517,14 @@ void APanCharacterPlayer::UnequipWeapon(const FGameplayEventData* EventData)
 		// 캐릭터 기본 공격력 감소 (-무기 공격력)
 		ASC->SetNumericAttributeBase(UPanCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate - WeaponAttackRate);
 		
+		// 해당 클래스가 어빌리티를 부여했다면
+		FGameplayAbilitySpec* SkillAbilitySpec = ASC->FindAbilitySpecFromClass(SkillAbilityClass);
+		if (SkillAbilitySpec)
+		{
+			// 해당 어빌리티 제거
+			ASC->ClearAbility(SkillAbilitySpec->Handle);
+		}
+
 		// 메시 없애기
 		Weapon->SetSkeletalMesh(nullptr);
 	}
