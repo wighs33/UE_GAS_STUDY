@@ -3,7 +3,13 @@
 
 #include "Attribute/PanCharacterSkillAttributeSet.h"
 
-UPanCharacterSkillAttributeSet::UPanCharacterSkillAttributeSet()
+UPanCharacterSkillAttributeSet::UPanCharacterSkillAttributeSet() :
+	SkillRange(800.0f),
+	MaxSkillRange(1200.0f),
+	SkillAttackRate(150.0f),
+	MaxSkillAttackRate(300.0f),
+	SkillEnergy(100.0f),
+	MaxSkillEnergy(100.0f)
 {
 }
 

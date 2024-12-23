@@ -21,6 +21,13 @@ void UPanGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
+	// 쿨다운이나 코스트를 적용하기 위해 호출
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
+		return;
+	}
+
 	// 타겟 캐릭터 있는 지 확인
 	APanCharacterPlayer* TargetCharacter = Cast<APanCharacterPlayer>(ActorInfo->AvatarActor.Get());
 	if (!TargetCharacter)

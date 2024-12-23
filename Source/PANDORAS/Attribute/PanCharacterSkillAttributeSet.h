@@ -42,15 +42,15 @@ class PANDORAS_API UPanCharacterSkillAttributeSet : public UAttributeSet
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData SkillRange = 800.f;
+	FGameplayAttributeData SkillRange /*= 800.f*/;
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxSkillRange = 1200.f;
+	FGameplayAttributeData MaxSkillRange /*= 1200.f*/;
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData SkillAttackRate = 150.f;
+	FGameplayAttributeData SkillAttackRate /*= 150.f*/;
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxSkillAttackRate = 300.f;
+	FGameplayAttributeData MaxSkillAttackRate /*= 300.f*/;
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData SkillEnergy = 100.f;
+	FGameplayAttributeData SkillEnergy /*= 100.f*/;
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxSkillEnergy = 100.f;
+	FGameplayAttributeData MaxSkillEnergy /*= 100.f*/;
 };
