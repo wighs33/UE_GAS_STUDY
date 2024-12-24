@@ -4,6 +4,11 @@
  * #include "Character\PanCharacterPlayer.h"
  * 확장 캐릭터 (플레이어)
  * 
+ * <BP_PanCharacterPlayer>
+ * StartAbilities : BPGA_AttackHitCheck, BPGA_SkillHitCheck
+ * StartInputAbilities : BPGA_Jump, BPGA_Attack
+ * SkillAbilityClass : BPGA_Skill
+ * 
  * @author	조현식
  * @date	2024-04-06
  *
@@ -17,6 +22,14 @@
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
 #include "PanCharacterPlayer.generated.h"
+
+UENUM()
+enum class ECharacterInputType : uint8
+{
+	Jump = 0,
+	Attack,
+	Skill
+};
 
 UCLASS()
 class PANDORAS_API APanCharacterPlayer : public APanCharacterBase, public IAbilitySystemInterface
@@ -95,7 +108,7 @@ protected:
 	
 	// 에디터에서 [기본 입력 어빌리티] 그룹 설정
 	UPROPERTY(EditAnywhere, Category = GAS)
-	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
+	TMap<ECharacterInputType, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
 
 
 // UI

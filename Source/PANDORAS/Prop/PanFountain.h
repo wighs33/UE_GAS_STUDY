@@ -37,16 +37,15 @@ protected:
 
 // 회전
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Movement)
-	TObjectPtr<class URotatingMovementComponent> RotatingMovement;
+	//UPROPERTY(VisibleAnywhere, Category = Movement)
+	//TObjectPtr<class URotatingMovementComponent> RotatingMovement;
 
 	UPROPERTY(EditAnywhere, Category = Timer)
-	float ActionPeriod = 3.0f;
+	float ActionPeriod = 3.f;
 
 	UPROPERTY(EditAnywhere, Category=GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
-	// 에디터에서 시작 어빌리티 그룹 설정
 	UPROPERTY(EditAnywhere, Category=GAS)
 	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
 

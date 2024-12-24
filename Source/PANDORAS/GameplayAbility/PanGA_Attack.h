@@ -1,4 +1,22 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ /**************************************************************************************************
+ * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\GameplayAbility\PanGA_Attack.h
+ * 
+ * #include "GameplayAbility/PanGA_Attack.h"
+ * 
+ * 콤보 공격 기능
+ * 
+ * <BPGA_Jump>
+ * Owned Tag : Character.State.IsAttacking
+ * Blocked Tag :
+ * Character.State.IsJumping
+ * Character.State.IsDead
+ * Character.State.IsSkilling
+ *
+ * @author	조현식
+ * @date	2024-04-06
+ *
+ * Copyright (c) 2024 LaughLife. All rights reserved
+ **************************************************************************************************/
 
 #pragma once
 

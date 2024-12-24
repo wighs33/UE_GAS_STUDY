@@ -2,7 +2,10 @@
  * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\Animation\AnimNotify_AttackHitCheck.h
  *
  * #include "Animation/AnimNotify_AttackHitCheck.h"
- * 공격 탐지 노티파이
+ * 공격 판정 노티파이
+ * 
+ * 콤보 공격 트리거 : Event.Character.Action.AttackHitCheck
+ * 스킬 공격 트리거 : Event.Character.Action.SkillHitCheck
  * 
  * @author	조현식
  * @date	2024-04-06

@@ -3,6 +3,7 @@
  *
  * #include "GameplayAbility/AbilityTask/PanAT_Trace.h"
  * 충돌 트레이스 진행 알림
+ * PanTA_Trace로 타겟 판정
  * 
  * @author	조현식
  * @date	2024-04-06

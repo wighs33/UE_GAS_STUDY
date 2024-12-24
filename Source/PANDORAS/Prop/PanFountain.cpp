@@ -15,7 +15,7 @@ APanFountain::APanFountain()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Water = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Water"));
 	Light = CreateDefaultSubobject<UPointLightComponent>(TEXT("Light"));
-	RotatingMovement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotateMovement"));
+	//RotatingMovement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotateMovement"));
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 
 	// 종속 관계 설정
@@ -54,10 +54,10 @@ void APanFountain::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	// 자동 회전 X
-	RotatingMovement->bAutoActivate = false;
-	// 회전 비활성화
-	RotatingMovement->Deactivate();
+	//// 자동 회전 X
+	//RotatingMovement->bAutoActivate = false;
+	//// 회전 비활성화
+	//RotatingMovement->Deactivate();
 	// 어빌리티 시스템 컴포넌트 초기화
 	ASC->InitAbilityActorInfo(/*오너액터*/this, /*아바타액터(비주얼만 수행)*/this);
 
@@ -77,7 +77,13 @@ void APanFountain::BeginPlay()
 	Super::BeginPlay();
 
 	// 타이머 설정
-	GetWorld()->GetTimerManager().SetTimer(ActionTimer, this, &APanFountain::TimerAction, ActionPeriod, true, 0.0f);
+	GetWorld()->GetTimerManager().SetTimer(
+		/*핸들*/ActionTimer, 
+		/*대상*/this, 
+		/*적용함수*/&APanFountain::TimerAction, 
+		/*주기*/ActionPeriod, 
+		/*루프*/true, 
+		/*처음딜레이*/0.0f);
 }
 
 /*************************************************************************************************

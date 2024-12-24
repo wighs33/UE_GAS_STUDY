@@ -173,7 +173,7 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 			// 스타트스펙 초기화
 			FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
 			// StartInputAbilities의 키를 스타트스펙의 아이디로 사용
-			StartSpec.InputID = StartInputAbility.Key;
+			StartSpec.InputID = static_cast<int32>(StartInputAbility.Key);
 			// 어빌리티 등록
 			ASC->GiveAbility(StartSpec);
 		}
@@ -201,7 +201,7 @@ void APanCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	// 향상된 입력 컴포넌트로 확장
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-	// 입력 액션과 액션 함수 바인딩
+	// 입력 액션과 액션 함수 바인딩 (이동과 시야는 GAS로 분리하지 않는 것이 더 좋다고 판단)
 	EnhancedInputComponent->BindAction(ChangeControlAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ChangeCharacterControl);
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderLook);
@@ -234,7 +234,7 @@ void APanCharacterPlayer::ChangeCharacterControl()
 }
 
 /*************************************************************************************************
- * 시점에 따라 다른 컨트롤 데이터 적용
+ * 시점에 따라 다른 컨트롤 데이터 적용 (입력 매핑 컨텍스트 갱신)
  *
  * @author	조현식
  * @date	2024/10/14
@@ -347,14 +347,14 @@ void APanCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	// 이동 벡터
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	// 이동 오프셋
-	float MovementVectorSize = 1.0f;
+	float MovementVectorSize = 1.f;
 	// 이동 벡터의 길이 제곱
 	float MovementVectorSizeSquared = MovementVector.SquaredLength();
-	if (MovementVectorSizeSquared > 1.0f)
+	if (MovementVectorSizeSquared > 1.f)
 	{
 		// 1보다 크면 단위벡터화
 		MovementVector.Normalize();
-		MovementVectorSizeSquared = 1.0f;
+		MovementVectorSizeSquared = 1.f;
 	}
 	else
 	{
@@ -363,7 +363,7 @@ void APanCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	}
 
 	// 이동 방향 얻기
-	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
+	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.f);
 	// MoveDirection을 컨트롤러가 조종하는 폰의 X축으로 사용
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	// 이동 방향으로 오프셋만큼 이동
@@ -386,10 +386,32 @@ void APanCharacterPlayer::SetupGASInputComponent()
 		// 향상된 입력 컴포넌트로 확장
 		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 		// 입력 액션과 액션 함수 바인딩
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 0);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APanCharacterPlayer::InputReleased, 0);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 1);
-		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::InputPressed, 2);
+		EnhancedInputComponent->BindAction(
+			JumpAction, 
+			ETriggerEvent::Triggered, 
+			this, 
+			&APanCharacterPlayer::InputPressed, 
+			static_cast<int32>(ECharacterInputType::Jump));
+		EnhancedInputComponent->BindAction(
+			JumpAction, 
+			ETriggerEvent::Completed, 
+			this, 
+			&APanCharacterPlayer::InputReleased, 
+			static_cast<int32>(ECharacterInputType::Jump));
+		EnhancedInputComponent->BindAction(
+			AttackAction, 
+			ETriggerEvent::Triggered, 
+			this, 
+			&APanCharacterPlayer::InputPressed, 
+			static_cast<int32>(ECharacterInputType::Attack));
+
+		// 에디터에서 어빌리티를 설정하지 않고 무기 장착 시에 코드로 ASC에 어빌리티를 부여함
+		EnhancedInputComponent->BindAction(
+			SkillAction, 
+			ETriggerEvent::Triggered, 
+			this, 
+			&APanCharacterPlayer::InputPressed, 
+			static_cast<int32>(ECharacterInputType::Skill));
 	}
 }
 
@@ -476,7 +498,7 @@ void APanCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
 		// GA스펙 생성
 		FGameplayAbilitySpec NewSkillSpec(SkillAbilityClass);
 		// 인풋 아이디를 2번으로 설정
-		NewSkillSpec.InputID = 2;
+		NewSkillSpec.InputID = static_cast<int32>(ECharacterInputType::Skill);
 		// 해당 클래스가 어빌리티를 부여하지 않았다면
 		if (!ASC->FindAbilitySpecFromClass(SkillAbilityClass))
 		{

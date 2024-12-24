@@ -30,12 +30,12 @@ void UPanGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	// 캐릭터의 이동을 없애기
 	PanCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
-	// 공격 태스크 생성
+	// 공격 태스크 생성 (공격 몽타주 재생, Proxy : AT와 상호작용할 수 있는 중개자)
 	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		/*소유 어빌리티*/this, 
 		/*태스크 이름*/TEXT("PlayAttack"), 
 		/*몽타주 애셋*/PanCharacter->GetComboActionMontage(),
-		/*속도*/1.0f, 
+		/*속도*/1.f, 
 		/*시작섹션*/GetNextSection());
 	// 태스크가 끝나는 시점 바인딩
 	PlayAttackTask->OnCompleted.AddDynamic(this, &UPanGA_Attack::OnCompleteCallback);
@@ -159,16 +159,16 @@ FName UPanGA_Attack::GetNextSection()
  **************************************************************************************************/
 void UPanGA_Attack::StartComboTimer()
 {
-	// 콤보 횟수 - 1 = 콤보 인덱스
+	// 현재 콤보 레벨 - 1 = 콤보 인덱스
 	int32 ComboIndex = CurrentCombo - 1;
 	// EffectiveFrameCount배열에서 ComboIndex가 유효한 인덱스인지 확인
 	ensure(CurrentComboData->EffectiveFrameCount.IsValidIndex(ComboIndex));
-	// 콤보 프레임 / 프레임 속도 = 콤보 시간
+	// 현재 콤보 레벨의 프레임 수 / fps = 콤보 시간
 	const float ComboEffectiveTime = CurrentComboData->EffectiveFrameCount[ComboIndex] / CurrentComboData->FrameRate;
 	// 콤보 시간이 0보다 큰 지 체크
-	if (ComboEffectiveTime > 0.0f)
+	if (ComboEffectiveTime > 0.f)
 	{
-		// 콤보 시간동안 콤보 진행되었는 지 확인
+		// 콤보 레벨마다 콤보 시간동안 콤보 진행되었는 지 확인
 		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &UPanGA_Attack::CheckComboInput, ComboEffectiveTime, false);
 	}
 }

@@ -33,7 +33,7 @@ void UPanCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Att
 	if (Attribute == GetDamageAttribute())
 	{
 		// 값이 음수일 때는 0으로 변경
-		NewValue = NewValue < 0.0f ? 0.0f : NewValue;
+		NewValue = NewValue < 0.f ? 0.f : NewValue;
 	}
 }
 
@@ -56,13 +56,13 @@ bool UPanCharacterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallb
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
 		// 평가된 데미지 값이 양수라면
-		if (Data.EvaluatedData.Magnitude > 0.0f)
+		if (Data.EvaluatedData.Magnitude > 0.f)
 		{
 			//대상이 무적 상태라면
 			if (Data.Target.HasMatchingGameplayTag(TAG_CHARACTER_INVINSIBLE))
 			{
 				// 데미지를 0으로 설정하고 값 변경 실패 반환
-				Data.EvaluatedData.Magnitude = 0.0f;
+				Data.EvaluatedData.Magnitude = 0.f;
 				return false;
 			}
 		}
@@ -83,7 +83,7 @@ void UPanCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectM
 	Super::PostGameplayEffectExecute(Data);
 
 	// 최소 체력은 0
-	float MinimumHealth = 0.0f;
+	float MinimumHealth = 0.f;
 	// GE로 들어온 값의 어트리뷰트가 체력이면 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -98,11 +98,11 @@ void UPanCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectM
 		// [현재 체력 - 데미지]를 최소 체력과 최대 체력 사이로 클램핑
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
 		// 데미지는 적용 후 0으로 초기화
-		SetDamage(0.0f);
+		SetDamage(0.f);
 	}
 
 	// 체력이 0이하인 동시에 체력고갈플래그가 false일 때
-	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
+	if ((GetHealth() <= 0.f) && !bOutOfHealth)
 	{
 		// 대상의 ASC에 캐릭터 사망 태그를 일시적으로 추가하여 캐릭터가 사망한 상태임을 표시
 		Data.Target.AddLooseGameplayTag(TAG_CHARACTER_ISDEAD);
@@ -110,7 +110,7 @@ void UPanCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectM
 		OnOutOfHealth.Broadcast();
 	}
 	// 체력고갈플래그를 갱신
-	bOutOfHealth = (GetHealth() <= 0.0f);
+	bOutOfHealth = (GetHealth() <= 0.f);
 }
 
 /*************************************************************************************************

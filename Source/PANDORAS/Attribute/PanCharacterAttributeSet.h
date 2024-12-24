@@ -3,6 +3,7 @@
  *
  * #include "CoreMinimal.h"
  * 게임 내 플레이어나 적을 구성하는 기본 데이터 모음
+ * PanPlayerState에서 어트리뷰트 저장
  * 
  * @author	조현식
  * @date	2024-04-06
@@ -85,7 +86,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxHealth = 100.f;
 
-	// 데미지
+	// 메타 어트리뷰트 : 값 설정을 위한 임시 어트리뷰트
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage = 0.f;
 

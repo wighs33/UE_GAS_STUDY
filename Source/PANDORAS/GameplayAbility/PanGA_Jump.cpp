@@ -71,15 +71,16 @@ void UPanGA_Jump::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 
 /*************************************************************************************************
  * 착지 알림 받을 함수
+ * 블루프린트로 대체
  *
  * @author	조현식
  * @date	2024/10/16
  **************************************************************************************************/
-void UPanGA_Jump::OnLandedCallback()
-{
-	bool bReplicatedEndAbility = true;
-	bool bWasCancelled = false;
-
-	// 어빌리티 종료
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
-}
+//void UPanGA_Jump::OnLandedCallback()
+//{
+//	bool bReplicatedEndAbility = true;
+//	bool bWasCancelled = false;
+//
+//	// 어빌리티 종료
+//	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+//}

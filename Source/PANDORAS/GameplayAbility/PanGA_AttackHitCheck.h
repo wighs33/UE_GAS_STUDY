@@ -2,7 +2,14 @@
  * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\GameplayAbility\PanGA_AttackHitCheck.h
  *
  * #include "GameplayAbility/PanGA_AttackHitCheck.h"
- * 공격 탐지 어빌리티
+ * 공격 판정 어빌리티
+ * PanAT_Trace 에서 판정 태스크 수행
+ * 
+ * <BPGA_AttackHitCheck>
+ * 트리거 : Event.Character.Action.AttackHitCheck
+ * AttackDamageEffect : BPGE_AttackDamage
+ * AttackBuffEffect : BPGE_AttackHitBuff
+ * TargetActorClass : PanAT_Trace
  * 
  * @author	조현식
  * @date	2024-04-06

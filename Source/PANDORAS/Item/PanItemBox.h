@@ -4,6 +4,8 @@
  * #include "Item/PanItemBox.h"
  * 
  * 아이템 박스
+ * 
+ * GameplayCueTag : GameplayCue.Chest.Open
  *
  * @author	조현식
  * @date	2024-04-06

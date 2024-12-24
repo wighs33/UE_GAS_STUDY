@@ -51,7 +51,7 @@ void UPanGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Han
  **************************************************************************************************/
 void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	// 타겟데이터 그룹에 피격결과 있는지 조사
+	// 타겟데이터 그룹에 피격결과 있는지 조사 (PanTA_Trace에서 단일 피격결과 판정)
 	if (UAbilitySystemBlueprintLibrary::TargetDataHasHitResult(TargetDataHandle, /*인덱스*/0))
 	{
 		// 타겟데이터 그룹 0번째의 피격결과 얻어냄
@@ -59,18 +59,19 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 
 		// ActorInfo로부터 ASC를 가져오고 불가능하면 에러를 발생
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-		// 소스 어트리뷰트로 정보를 가져온다.
-		const UPanCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UPanCharacterAttributeSet>();
 		// 피격 결과로 부터 타겟 ASC 가져오기
 		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+		// 소스ASC와 타겟ASC 둘중 하나만 없어도 로직스킵
+		if (!SourceASC || !TargetASC)
+		{
+			PAN_LOG(LogGAS, Error, TEXT("ASC not found!"));
+			return;
+		}
+
+		// 소스 어트리뷰트로 정보를 가져온다.
+		const UPanCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UPanCharacterAttributeSet>();
 
 		// BPGE_AttackDamage(게임 이펙트 블루프린트)에서 아래 로직을 구현하기 때문에 주석처리
-		//// 소스ASC와 타겟ASC 둘중 하나만 없어도 로직스킵
-		//if (!SourceASC || !TargetASC)
-		//{
-		//	PAN_LOG(LogGAS, Error, TEXT("ASC not found!"));
-		//	return;
-		//}
 		//// 타겟 어트리뷰트는 값을 변경해야 하기 때문에 const_cast로 const를 없앤다
 		//UPanCharacterAttributeSet* TargetAttribute = const_cast<UPanCharacterAttributeSet*>(TargetASC->GetSet<UPanCharacterAttributeSet>());
 		//// 소스 어트리뷰트와 타겟 어트리뷰트 둘중 하나만 없어도 로직스킵
@@ -116,7 +117,7 @@ void UPanGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDa
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, BuffEffectSpecHandle);
 		}
 	}
-	//TargetDataHandle의 첫 번째 인덱스(0번 인덱스)에 액터 타겟이 존재한다면
+	//TargetDataHandle의 첫 번째 인덱스(0번 인덱스)에 액터 타겟이 존재한다면 (PanTA_SphereMultiTrace에서 범위 내 다수 판정)
 	else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
 		// 현재 어빌리티를 발동한 캐릭터가 가지고 있는 ASC를 획득
