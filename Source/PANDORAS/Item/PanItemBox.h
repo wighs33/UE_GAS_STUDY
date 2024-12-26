@@ -60,6 +60,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Item)
 	TObjectPtr<class UPanItemData> Item;
 
-	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = Event))
-	FGameplayTag ItemEventTag;
+	//UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = Event))
+	//FGameplayTag ItemEventTag;
 };

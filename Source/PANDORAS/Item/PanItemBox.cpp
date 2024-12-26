@@ -10,6 +10,7 @@
 #include "Interface/PanCharacterItemInterface.h"
 #include "Engine/AssetManager.h"
 #include "PanItemData.h"
+#include "Tag/PanGamePlayTag.h"
 
 APanItemBox::APanItemBox()
 {
@@ -86,6 +87,22 @@ void APanItemBox::NotifyActorBeginOverlap(AActor* Other)
 	// 2초 후 액터 제거
 	SetLifeSpan(2.0f);
 
+	// 태그
+	FGameplayTag ItemEventTag;
+	// 아이템 타입과 태그 매칭시키기
+	switch (Item->Type)
+	{
+	case EItemType::Weapon:
+		ItemEventTag = TAG_EVENT_CHARACTER_WEAPONEQUIP;
+		break;
+	case EItemType::Potion:
+		ItemEventTag = TAG_EVENT_CHARACTER_POTIONDRINK;
+		break;
+	case EItemType::Scroll:
+		ItemEventTag = TAG_EVENT_CHARACTER_SCROLLREAD;
+		break;
+	}
+
 	// 액터의 ASC로 이벤트 전송
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Other, ItemEventTag, FGameplayEventData());
 }
@@ -114,8 +131,12 @@ void APanItemBox::PostInitializeComponents()
 		// 동기방식으로 애셋을 로드
 		AssetPtr.LoadSynchronous();
 	}
-	// 로드된 객체를 아이템 데이터로 변환
-	Item = Cast<UPanItemData>(AssetPtr.Get());
+	// 아이템 데이터가 할당되어 있지 않다면
+	if (!Item)
+	{
+		// 로드된 객체를 아이템 데이터로 변환
+		Item = Cast<UPanItemData>(AssetPtr.Get());
+	}
 	// 검사
 	ensure(Item);
 }
