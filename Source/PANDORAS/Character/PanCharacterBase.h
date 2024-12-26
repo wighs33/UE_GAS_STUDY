@@ -23,20 +23,6 @@ enum class ECharacterControlType : uint8
 	Quater
 };
 
-//// 아이템 사용을 위한 델리게이트 : 바인딩 하는 함수는 인자가 UPanItemData* 타입 하나여야 한다.
-//DECLARE_DELEGATE_OneParam(FOnTakeItemDelegate, class UPanItemData* /*InItemData*/);
-//
-//// 배열에 넣기 위해 FTakeItemDelegateWrapper를 만들어서 사용
-//USTRUCT(BlueprintType)
-//struct FTakeItemDelegateWrapper
-//{
-//	GENERATED_BODY()
-//	
-//	FTakeItemDelegateWrapper() {}
-//	FTakeItemDelegateWrapper(const FOnTakeItemDelegate& InItemDelegate) : ItemDelegate(InItemDelegate) {}
-//	FOnTakeItemDelegate ItemDelegate;
-//};
-
 UCLASS()
 class PANDORAS_API APanCharacterBase : public ACharacter
 {
@@ -93,12 +79,4 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USkeletalMeshComponent> Weapon;
-
-	//UPROPERTY()
-	//TArray<FTakeItemDelegateWrapper> TakeItemActions;
-
-	//virtual void TakeItem(class UPanItemData* InItemData) override;
-	//virtual void DrinkPotion(class UPanItemData* InItemData);
-	//virtual void EquipWeapon(class UPanItemData* InItemData);
-	//virtual void ReadScroll(class UPanItemData* InItemData);
 };

@@ -23,3 +23,5 @@
 #define TAG_GAMEPLAYCUE_CHARACTER_ATTACKHIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.AttackHit"))
 #define TAG_EVENT_CHARACTER_WEAPONEQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.Equip"))
 #define TAG_EVENT_CHARACTER_WEAPONUNEQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.Unequip"))
+#define TAG_EVENT_CHARACTER_POTIONDRINK FGameplayTag::RequestGameplayTag(FName("Event.Character.Potion.Drink"))
+#define TAG_EVENT_CHARACTER_SCROLLREAD FGameplayTag::RequestGameplayTag(FName("Event.Character.Scroll.Read"))

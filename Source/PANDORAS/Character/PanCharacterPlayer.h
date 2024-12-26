@@ -1,7 +1,7 @@
  /**************************************************************************************************
  * @file	C:\Users\whgus\Desktop\GameProject\PANDORAS\Source\PANDORAS\Character\PanCharacterPlayer.h
  *
- * #include "Character\PanCharacterPlayer.h"
+ * #include "Character/PanCharacterPlayer.h"
  * 확장 캐릭터 (플레이어)
  * 
  * <BP_PanCharacterPlayer>
@@ -21,6 +21,7 @@
 #include "Character/PanCharacterBase.h"
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
+#include "Interface/PanCharacterItemInterface.h"
 #include "PanCharacterPlayer.generated.h"
 
 UENUM()
@@ -31,8 +32,23 @@ enum class ECharacterInputType : uint8
 	Skill
 };
 
+//// 아이템 사용을 위한 델리게이트 : 바인딩 하는 함수는 인자가 UPanItemData* 타입 하나여야 한다.
+//DECLARE_DELEGATE_OneParam(FOnTakeItemDelegate, class UPanItemData* /*InItemData*/);
+//
+//// 배열에 넣기 위해 FTakeItemDelegateWrapper를 만들어서 사용
+//USTRUCT(BlueprintType)
+//struct FTakeItemDelegateWrapper
+//{
+//	GENERATED_BODY()
+//
+//	FTakeItemDelegateWrapper() {}
+//	FTakeItemDelegateWrapper(const FOnTakeItemDelegate& InItemDelegate) : ItemDelegate(InItemDelegate) {}
+//	FOnTakeItemDelegate ItemDelegate;
+//};
+
 UCLASS()
-class PANDORAS_API APanCharacterPlayer : public APanCharacterBase, public IAbilitySystemInterface
+class PANDORAS_API APanCharacterPlayer : 
+	public APanCharacterBase, public IAbilitySystemInterface, public IPanCharacterItemInterface
 {
 	GENERATED_BODY()
 
@@ -121,11 +137,18 @@ protected:
 
 // 아이템
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UPanItemData> RecentItemData;
+
+	//UPROPERTY()
+	//TArray<FTakeItemDelegateWrapper> TakeItemActions;
+
+	virtual void SetItemData(class UPanItemData* InItemData) override { RecentItemData = InItemData; }
+	virtual void DrinkPotion(const FGameplayEventData* EventData);
+	virtual void ReadScroll(const FGameplayEventData* EventData);
+
 	void EquipWeapon(const FGameplayEventData* EventData);
 	void UnequipWeapon(const FGameplayEventData* EventData);
-
-	UPROPERTY(EditAnywhere, Category = Weapon)
-	TObjectPtr<class USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	float WeaponRange = 75.f;

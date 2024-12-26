@@ -7,6 +7,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "Physics/PanCollision.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Interface/PanCharacterItemInterface.h"
+#include "Engine/AssetManager.h"
+#include "PanItemData.h"
 
 APanItemBox::APanItemBox()
 {
@@ -63,6 +66,14 @@ void APanItemBox::NotifyActorBeginOverlap(AActor* Other)
 {
 	Super::NotifyActorBeginOverlap(Other);
 
+	// 액터가 플레이어 캐릭터라면
+	IPanCharacterItemInterface* OverlappingPawn = Cast<IPanCharacterItemInterface>(Other);
+	if (OverlappingPawn)
+	{
+		// 아이템 데이터를 플레이어 캐릭터에게 전달
+		OverlappingPawn->SetItemData(Item);
+	}
+
 	// 오버랩이 발생한 액터를 대상으로 GC 실행
 	InvokeGameplayCue(Other);
 	// Other 액터에게 특정한 Gameplay Effect(능력 수치 변경, 버프/디버프 적용 등)를 적용하는 함수로 추정됩니다. 이를 통해 아이템 박스에 부딪힌 플레이어나 다른 캐릭터에게 특정 효과가 부여될 수 있습니다.
@@ -74,6 +85,9 @@ void APanItemBox::NotifyActorBeginOverlap(AActor* Other)
 	SetActorEnableCollision(false);
 	// 2초 후 액터 제거
 	SetLifeSpan(2.0f);
+
+	// 액터의 ASC로 이벤트 전송
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Other, ItemEventTag, FGameplayEventData());
 }
 
 void APanItemBox::PostInitializeComponents()
@@ -81,6 +95,29 @@ void APanItemBox::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	// 어빌리티 등록
 	ASC->InitAbilityActorInfo(this, this);
+
+	// 프로젝트 세팅의 애셋 매니저
+	UAssetManager& Manager = UAssetManager::Get();
+	// 애셋 아이디 그룹
+	TArray<FPrimaryAssetId> Assets;
+	// [애셋 아이디 그룹]에 PanItemData 타입에 해당하는 모든 에셋의 PrimaryAssetId 채우기
+	Manager.GetPrimaryAssetIdList(TEXT("PanItemData"), Assets);
+	// [애셋 아이디 그룹]에 최소한 한 개의 애셋이 있다면
+	ensure(0 < Assets.Num());
+	// [애셋 아이디 그룹]의 수만큼 랜덤돌리기
+	int32 RandomIndex = FMath::RandRange(0, Assets.Num() - 1);
+	// 애셋 경로를 구해서 참조하기 (소프트 레퍼런싱 : 애셋 데이터가 필요한 시점에 로딩하는 방법)
+	FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
+	// 로드되지 않았다면
+	if (AssetPtr.IsPending())
+	{
+		// 동기방식으로 애셋을 로드
+		AssetPtr.LoadSynchronous();
+	}
+	// 로드된 객체를 아이템 데이터로 변환
+	Item = Cast<UPanItemData>(AssetPtr.Get());
+	// 검사
+	ensure(Item);
 }
 
 /*************************************************************************************************

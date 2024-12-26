@@ -169,7 +169,12 @@ void UPanGA_Attack::StartComboTimer()
 	if (ComboEffectiveTime > 0.f)
 	{
 		// 콤보 레벨마다 콤보 시간동안 콤보 진행되었는 지 확인
-		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &UPanGA_Attack::CheckComboInput, ComboEffectiveTime, false);
+		GetWorld()->GetTimerManager().SetTimer(
+			/*핸들*/ComboTimerHandle,
+			/*대상*/this,
+			/*적용함수*/&UPanGA_Attack::CheckComboInput,
+			/*주기*/ComboEffectiveTime,
+			/*루프*/false);
 	}
 }
 

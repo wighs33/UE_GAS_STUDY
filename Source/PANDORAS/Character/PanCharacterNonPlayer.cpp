@@ -9,6 +9,9 @@
 
 APanCharacterNonPlayer::APanCharacterNonPlayer()
 {
+	// 월드 배치뿐만 아니라 코드로 소환할 때도 컨트롤러 자동으로 할당해주기
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 	// 컴포넌트 생성
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 	AttributeSet = CreateDefaultSubobject<UPanCharacterAttributeSet>(TEXT("AttributeSet"));

@@ -10,8 +10,6 @@
 #include "Physics/PanCollision.h"
 #include "Engine/DamageEvents.h"
 
-#include "PANDORAS.h"
-
 // Sets default values
 APanCharacterBase::APanCharacterBase()
 {
@@ -96,11 +94,6 @@ APanCharacterBase::APanCharacterBase()
 		DeadMontage = DeadMontageRef.Object;
 	}
 
-	//// 함수가 바인딩된 아이템 착용 시점을 배열에 추가
-	//TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &APanCharacterBase::EquipWeapon)));
-	//TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &APanCharacterBase::DrinkPotion)));
-	//TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &APanCharacterBase::ReadScroll)));
-
 	// 컴포넌트 생성
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	// 핸드 소켓에 부착
@@ -155,70 +148,6 @@ void APanCharacterBase::PlayDeadAnimation()
 	// 사망 몽타주 재생
 	AnimInstance->Montage_Play(DeadMontage, 1.0f);
 }
-
-///*************************************************************************************************
-// * 아이템 사용
-// *
-// * @author	조현식
-// * @date	2024/12/19
-// * @param	아이템 데이터
-// **************************************************************************************************/
-//void APanCharacterBase::TakeItem(UPanItemData* InItemData)
-//{
-//	if (InItemData)
-//	{
-//		// 먹은 아이템의 타입에 따라 액션이 바인딩되어 있다면 함수 실행
-//		TakeItemActions[(uint8)InItemData->Type].ItemDelegate.ExecuteIfBound(InItemData);
-//	}
-//}
-
-///*********************************************************************************************
-// * 포션 마시기
-// *
-// * @author	조현식
-// * @date	2024/12/19
-// * @param	아이템 데이터
-// *********************************************************************************************/
-//void APanCharacterBase::DrinkPotion(UPanItemData* InItemData)
-//{
-//	PAN_LOG(LogALL, Log, TEXT("Drink Potion"));
-//}
-//
-///*********************************************************************************************
-// * 무기 장착
-// *
-// * @author	조현식
-// * @date	2024/12/19
-// * @param	아이템 데이터
-// *********************************************************************************************/
-//void APanCharacterBase::EquipWeapon(UPanItemData* InItemData)
-//{
-//	UPanWeaponItemData* WeaponItemData = Cast<UPanWeaponItemData>(InItemData);
-//	if (WeaponItemData)
-//	{
-//		// 소프트 레퍼러싱 : 로딩이 안되어 있는 상황일 때 로딩시키기
-//		if (WeaponItemData->WeaponMesh.IsPending())
-//		{
-//			WeaponItemData->WeaponMesh.LoadSynchronous();
-//		}
-//		// 소프트 레퍼런싱된 건 Get 함수로 가져와야됨
-//		Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh.Get());
-//	}
-//}
-//
-///*********************************************************************************************
-// * 주문서 읽기
-// *
-// * @author	조현식
-// * @date	2024/12/19
-// * @param	아이템 데이터
-// *********************************************************************************************/
-//void APanCharacterBase::ReadScroll(UPanItemData* InItemData)
-//{
-//	PAN_LOG(LogALL, Log, TEXT("Read Scroll"));
-//}
-
-
 
 ///*************************************************************************************************
 // * 콤보 액션 몽타주를 플레이함

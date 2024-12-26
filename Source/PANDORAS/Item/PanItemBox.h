@@ -29,6 +29,8 @@ class PANDORAS_API APanItemBox : public AActor, public IAbilitySystemInterface
 public:	
 	APanItemBox();
 
+	FORCEINLINE class UBoxComponent* GetTrigger() { return Trigger; }
+
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void NotifyActorBeginOverlap(class AActor* Other) override;
 
@@ -53,4 +55,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS, Meta=(Categories=GameplayCue))
 	FGameplayTag GameplayCueTag;
+
+protected:
+	UPROPERTY(EditAnywhere, Category = Item)
+	TObjectPtr<class UPanItemData> Item;
+
+	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = Event))
+	FGameplayTag ItemEventTag;
 };

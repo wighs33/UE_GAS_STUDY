@@ -13,6 +13,9 @@
 #include "UI/PanUserWidget.h"
 #include "Attribute/PanCharacterAttributeSet.h"
 #include "Tag/PanGamePlayTag.h"
+#include "Item/PanWeaponItemData.h"
+
+#include "PANDORAS.h"
 
 APanCharacterPlayer::APanCharacterPlayer()
 {
@@ -87,15 +90,6 @@ APanCharacterPlayer::APanCharacterPlayer()
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
-	// 무기 애셋 로드
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Pandoras/Item/Weapon/Blade_DragonSword/SK_Blade_DragonSword.SK_Blade_DragonSword'"));
-	// 오브젝트가 유효하다면
-	if (WeaponMeshRef.Object)
-	{
-		// TObjectPtr형식으로 저장
-		WeaponMesh = WeaponMeshRef.Object;
-	}
-
 	// 스킬 몽타주 로드
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKillActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Pandoras/Animation/AM_SkillAttack.AM_SkillAttack'"));
 	// 오브젝트가 유효하다면
@@ -104,6 +98,11 @@ APanCharacterPlayer::APanCharacterPlayer()
 		// TObjectPtr형식으로 저장
 		SkillActionMontage = SKillActionMontageRef.Object;
 	}
+
+	//// 함수가 바인딩된 아이템 착용 시점을 배열에 추가
+	//TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &APanCharacterPlayer::EquipWeapon)));
+	//TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &APanCharacterPlayer::DrinkPotion)));
+	//TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &APanCharacterPlayer::ReadScroll)));
 }
 
 void APanCharacterPlayer::BeginPlay()
@@ -151,6 +150,10 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 		ASC->GenericGameplayEventCallbacks.FindOrAdd(TAG_EVENT_CHARACTER_WEAPONEQUIP).AddUObject(this, &APanCharacterPlayer::EquipWeapon);
 		// 무기 탈착 태그에 신호가 오는 시점에 UnequipWeapon 함수 바인딩
 		ASC->GenericGameplayEventCallbacks.FindOrAdd(TAG_EVENT_CHARACTER_WEAPONUNEQUIP).AddUObject(this, &APanCharacterPlayer::UnequipWeapon);
+		// 포션 사용 태그에 신호가 오는 시점에 DrinkPotion 함수 바인딩
+		ASC->GenericGameplayEventCallbacks.FindOrAdd(TAG_EVENT_CHARACTER_POTIONDRINK).AddUObject(this, &APanCharacterPlayer::DrinkPotion);
+		// 주문서 사용 태그에 신호가 오는 시점에 ReadScroll 함수 바인딩
+		ASC->GenericGameplayEventCallbacks.FindOrAdd(TAG_EVENT_CHARACTER_SCROLLREAD).AddUObject(this, &APanCharacterPlayer::ReadScroll);
 
 		// 어트리뷰트 모음 얻는데 성공한다면
 		const UPanCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPanCharacterAttributeSet>();
@@ -492,8 +495,19 @@ void APanCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
 	// 무기 설정이 가능하다면
 	if (Weapon)
 	{
-		// 무기 메시 적용
-		Weapon->SetSkeletalMesh(WeaponMesh);
+		// 무기 아이템 데이터라면 
+		UPanWeaponItemData* WeaponItemData = Cast<UPanWeaponItemData>(RecentItemData);
+		if (WeaponItemData)
+		{
+			// 무기 애셋이 로드되지 않았다면 (소프트 레퍼런싱 : 애셋 데이터가 필요한 시점에 로딩하는 방법)
+			if (WeaponItemData->WeaponMesh.IsPending())
+			{
+				// 동기방식으로 애셋을 로드
+				WeaponItemData->WeaponMesh.LoadSynchronous();
+			}
+			// 무기 메시 설정(소프트 레퍼런싱된 건 Get 함수로 가져와야됨)
+			Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh.Get());
+		}
 
 		// GA스펙 생성
 		FGameplayAbilitySpec NewSkillSpec(SkillAbilityClass);
@@ -551,3 +565,44 @@ void APanCharacterPlayer::UnequipWeapon(const FGameplayEventData* EventData)
 		Weapon->SetSkeletalMesh(nullptr);
 	}
 }
+
+/*********************************************************************************************
+ * 포션 마시기
+ *
+ * @author	조현식
+ * @date	2024/12/19
+ * @param	아이템 데이터
+ *********************************************************************************************/
+void APanCharacterPlayer::DrinkPotion(const FGameplayEventData* EventData)
+{
+	PAN_LOG(LogALL, Warning, TEXT("Drink Potion"));
+}
+
+/*********************************************************************************************
+ * 주문서 읽기
+ *
+ * @author	조현식
+ * @date	2024/12/19
+ * @param	아이템 데이터
+ *********************************************************************************************/
+void APanCharacterPlayer::ReadScroll(const FGameplayEventData* EventData)
+{
+	PAN_LOG(LogALL, Warning, TEXT("Read Scroll"));
+}
+
+///*************************************************************************************************
+// * 아이템 사용
+// *
+// * @author	조현식
+// * @date	2024/12/19
+// * @param	아이템 데이터
+// **************************************************************************************************/
+//void APanCharacterPlayer::TakeItem(UPanItemData* InItemData)
+//{
+//	if (InItemData)
+//	{
+//		// 먹은 아이템의 타입에 따라 매칭되는 함수 실행
+//		TakeItemActions[static_cast<uint8>(InItemData->Type)].ItemDelegate.ExecuteIfBound(InItemData);
+//	}
+//}
+//
