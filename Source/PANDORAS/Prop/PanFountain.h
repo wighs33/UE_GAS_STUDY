@@ -37,8 +37,8 @@ protected:
 
 // 회전
 protected:
-	//UPROPERTY(VisibleAnywhere, Category = Movement)
-	//TObjectPtr<class URotatingMovementComponent> RotatingMovement;
+	UPROPERTY(VisibleAnywhere, Category = Movement)
+	TObjectPtr<class URotatingMovementComponent> RotatingMovement;
 
 	UPROPERTY(EditAnywhere, Category = Timer)
 	float ActionPeriod = 3.f;
@@ -50,5 +50,4 @@ protected:
 	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
 
 	FTimerHandle ActionTimer;
-
 };

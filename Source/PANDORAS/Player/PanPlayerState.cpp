@@ -14,7 +14,7 @@ APanPlayerState::APanPlayerState()
 	SkillAttributeSet = CreateDefaultSubobject<UPanCharacterSkillAttributeSet>(TEXT("SkillAttributeSet"));
 
 	// 네트워크 동기화
-	//ASC->SetIsReplicated(true);
+	ASC->SetIsReplicated(true);
 }
 
 UAbilitySystemComponent* APanPlayerState::GetAbilitySystemComponent() const

@@ -26,7 +26,15 @@ void UPanGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	// ActorInfo를 통해 캐릭터 얻기
 	APanCharacterBase* PanCharacter = CastChecked<APanCharacterBase>(ActorInfo->AvatarActor.Get());
 
-	CurrentComboData = PanCharacter->GetComboActionData();
+
+
+
+	// 단일 공격 테스트
+	//CurrentComboData = PanCharacter->GetComboActionData();
+	
+
+
+
 	// 캐릭터의 이동을 없애기
 	PanCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
@@ -44,8 +52,12 @@ void UPanGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	// 태스크 실행 준비
 	PlayAttackTask->ReadyForActivation();
 
+
+
+
+	// 단일 공격 테스트
 	// 시작 콤보 타이머
-	StartComboTimer();
+	//StartComboTimer();
 }
 
 /*************************************************************************************************
@@ -145,10 +157,18 @@ void UPanGA_Attack::OnInterruptedCallback()
 FName UPanGA_Attack::GetNextSection()
 {
 	// [현재 콤보 횟수 + 1]이 [최대 콤보 횟수] 내에 있는 지 검사
-	CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, CurrentComboData->MaxComboCount);
+	//CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, CurrentComboData->MaxComboCount);
 	// NextSection = [몽타주이름][콤보횟수]
-	FName NextSection = *FString::Printf(TEXT("%s%d"), *CurrentComboData->MontageSectionNamePrefix, CurrentCombo);
-	return NextSection;
+	//FName NextSection = *FString::Printf(TEXT("%s%d"), *CurrentComboData->MontageSectionNamePrefix, CurrentCombo);
+	//return NextSection;
+
+
+
+
+
+
+	// 단일 공격 테스트
+	return *FString::Printf(TEXT("aa"));
 }
 
 /*************************************************************************************************

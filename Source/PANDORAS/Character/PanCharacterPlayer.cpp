@@ -17,8 +17,14 @@
 
 #include "PANDORAS.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 APanCharacterPlayer::APanCharacterPlayer()
 {
+	// 리플리케이트 허용
+	SetReplicates(true);
+	SetReplicateMovement(true);
+
 	// 컴포넌트 생성
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -138,10 +144,10 @@ void APanCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// 플레이어 상태 얻기
+	// 플레이어 스테이트 얻기
 	if (APanPlayerState* PanPlayerState = GetPlayerState<APanPlayerState>())
 	{
-		// 플레이어 상태에서 ASC 얻기
+		// 플레이어 스테이트에서 ASC 얻기
 		ASC = PanPlayerState->GetAbilitySystemComponent();
 		// 어빌리티 등록
 		ASC->InitAbilityActorInfo(PanPlayerState, this);
@@ -209,10 +215,38 @@ void APanCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &APanCharacterPlayer::QuaterMove);
-
+	
 	// 게임 어빌리티 시스템으로 입력 바인딩
 	SetupGASInputComponent();
 }
+//
+//bool APanCharacterPlayer::ServerRPCInputPressed_Validate(int32 InputId)
+//{
+//	return true;
+//}
+//void APanCharacterPlayer::ServerRPCInputPressed_Implementation(int32 InputId)
+//{
+//	MulticastRPCInputPressed(InputId);
+//}
+//void APanCharacterPlayer::MulticastRPCInputPressed_Implementation(int32 InputId)
+//{
+//	// ASC에 등록된 스펙을 검사해 입력에 매핑된 GA 찾기
+//	if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId))
+//	{
+//		// 스펙에 입력 알려줌
+//		Spec->InputPressed = true;
+//		if (Spec->IsActive())
+//		{
+//			// GA가 발동 중이면 입력이 왔다는 신호 전달
+//			ASC->AbilitySpecInputPressed(*Spec);
+//		}
+//		else
+//		{
+//			// GA가 발동 중이 아니면 새롭게 발동
+//			ASC->TryActivateAbility(Spec->Handle);
+//		}
+//	}
+//}
 
 /*************************************************************************************************
  * 숄더뷰와 쿼터뷰 시점 사이의 교체
@@ -246,6 +280,11 @@ void APanCharacterPlayer::ChangeCharacterControl()
  **************************************************************************************************/
 void APanCharacterPlayer::SetCharacterControl(ECharacterControlType NewCharacterControlType)
 {
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
 	// 해당 시점의 컨트롤 데이터
 	UPanCharacterControlData* NewCharacterControl = CharacterControlManager[NewCharacterControlType];
 	check(NewCharacterControl);
@@ -383,6 +422,8 @@ void APanCharacterPlayer::QuaterMove(const FInputActionValue& Value)
  **************************************************************************************************/
 void APanCharacterPlayer::SetupGASInputComponent()
 {
+	FString str = ((GetNetMode() == ENetMode::NM_Client) ? *FString::Printf(TEXT("CLIENT%d"), GPlayInEditorID) : ((GetNetMode() == ENetMode::NM_Standalone) ? TEXT("STANDALONE") : TEXT("SERVER")));
+
 	// 유효성 검사
 	if (IsValid(ASC) && IsValid(InputComponent))
 	{
